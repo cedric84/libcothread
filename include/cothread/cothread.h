@@ -27,7 +27,7 @@ struct _cothread_ep_t
 /**
  * @brief		The value to initialize an [endpoint](@ref _cothread_ep_t) with.
  */
-#define COTHREAD_EP_INITIALIZER	{ { 0, }, }
+#define COTHREAD_EP_INITIALIZER	{ }
 
 /**
  * @brief		The cothread attribute type.

@@ -22,3 +22,21 @@ jobs:
         run: ./out/x86_64-gnu_linux-unittest
       - name: run tuto0
         run: ./out/x86_64-gnu_linux-tuto0
+
+  mac-build:
+    runs-on: macos-12
+
+    steps:
+      #---Checkout current repository---#
+      - name: checkout
+        uses: actions/checkout@v4
+
+      #---Build---#
+      - name: build
+        run: ./x86_64-macos-build.command
+
+      #---Run---#
+      - name: run unittest
+        run: ./out/x86_64-macos-unittest
+      - name: run tuto0
+        run: ./out/x86_64-macos-tuto0
