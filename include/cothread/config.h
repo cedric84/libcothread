@@ -9,6 +9,7 @@
 #define COTHREAD_CC_ID_GCC			1	///< @brief	The GNU C compiler identifier.
 #define COTHREAD_CC_ID_CLANG		2	///< @brief	The LLVM Clang compiler identifier.
 #define COTHREAD_CC_ID_MINGW		3	///< @brief	The MinGW compiler identifier.
+#define COTHREAD_CC_ID_CL			4	///< @brief	The Microsoft Visual Studio compiler identifier.
 
 #define COTHREAD_ARCH_ID_X86_64		1	///< @brief	The x86_64 architecture identifier.
 
@@ -23,6 +24,8 @@
 	#define	COTHREAD_CC_ID	COTHREAD_CC_ID_CLANG
 #elif	(defined(__MINGW32__))
 	#define	COTHREAD_CC_ID	COTHREAD_CC_ID_MINGW
+#elif	(defined(_MSC_VER))
+	#define	COTHREAD_CC_ID	COTHREAD_CC_ID_CL
 #else
 	#error	"compiler is not detected."
 #endif
@@ -32,6 +35,8 @@
 #elif	((COTHREAD_CC_ID_CLANG == COTHREAD_CC_ID) && defined(__x86_64__))
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
 #elif	((COTHREAD_CC_ID_MINGW == COTHREAD_CC_ID) && defined(__x86_64__))
+	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
+#elif	((COTHREAD_CC_ID_CL == COTHREAD_CC_ID) && defined(_M_AMD64))
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
 #else
 	#error	"architecture is not detected."
@@ -44,6 +49,8 @@
 #elif	((COTHREAD_CC_ID_CLANG == COTHREAD_CC_ID) && defined(__APPLE__) && defined(__MACH__) && defined(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__))
 	#define	COTHREAD_OS_ID		COTHREAD_OS_ID_MACOS
 #elif	((COTHREAD_CC_ID_MINGW == COTHREAD_CC_ID) && defined(_WIN32))
+	#define	COTHREAD_OS_ID		COTHREAD_OS_ID_WINDOWS
+#elif	((COTHREAD_CC_ID_CL == COTHREAD_CC_ID) && defined(_WIN32))
 	#define	COTHREAD_OS_ID		COTHREAD_OS_ID_WINDOWS
 #else
 	#error	"operating system is not detected."
@@ -87,6 +94,14 @@
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL			__attribute__ ((ms_abi))
 	typedef	__uint128_t				cothread_stack_t;
+#elif	(!0	\
+		&& (COTHREAD_CC_ID_CL			== COTHREAD_CC_ID)		\
+		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
+		&& (COTHREAD_OS_ID_WINDOWS		== COTHREAD_OS_ID)		\
+		)
+	#define	COTHREAD_LINK_HIDDEN
+	#define COTHREAD_CALL
+	typedef	__declspec(align(16)) struct _cothread_stack_t { char buf; }	cothread_stack_t;
 #else
 	#error	"configuration is not supported."
 #endif

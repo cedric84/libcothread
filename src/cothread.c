@@ -7,7 +7,11 @@
 #include <assert.h>
 #include <stdint.h>
 
-#if		(COTHREAD_CC_ID_CLANG != COTHREAD_CC_ID)
+#if ((COTHREAD_CC_ID_CL == COTHREAD_CC_ID) && (COTHREAD_OS_ID_WINDOWS == COTHREAD_OS_ID))
+	extern int	__intrinsic_setjmp	(jmp_buf, void*);
+#endif
+
+#if		((COTHREAD_CC_ID_CLANG != COTHREAD_CC_ID) && (COTHREAD_CC_ID_CL != COTHREAD_CC_ID))
 	_Static_assert(0	== (uintptr_t)&(((cothread_ep_t*)0)->buf)			, "invalid offset");
 
 	_Static_assert(0	== (uintptr_t)&(((cothread_attr_t*)0)->stack)		, "invalid offset");
@@ -44,6 +48,8 @@ cothread_yield(cothread_t* cothread, int user_val)
 	//---Save the current endpoint---//
 #if ((COTHREAD_CC_ID_MINGW == COTHREAD_CC_ID) && (COTHREAD_OS_ID_WINDOWS == COTHREAD_OS_ID))
 	const int	ret	= _setjmp(cothread->current->buf, 0);
+#elif ((COTHREAD_CC_ID_CL == COTHREAD_CC_ID) && (COTHREAD_OS_ID_WINDOWS == COTHREAD_OS_ID))
+	const int	ret = __intrinsic_setjmp(cothread->current->buf, 0);
 #else
 	const int	ret	= setjmp(cothread->current->buf);
 #endif

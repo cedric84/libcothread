@@ -41,8 +41,8 @@ main(int argc, char* argv[])
 	printf("%s started\n", __func__);
 
 	//---Initialize the cothread---//
-	static cothread_ep_t	caller_ep	= COTHREAD_EP_INITIALIZER;
-	static cothread_ep_t	callee_ep	= COTHREAD_EP_INITIALIZER;
+	static cothread_ep_t	caller_ep;
+	static cothread_ep_t	callee_ep;
 	static cothread_stack_t	stack[8 * 1024 * 1024 / sizeof(cothread_stack_t)];
 	cothread_attr_t			attr	= {
 		.stack		= stack,

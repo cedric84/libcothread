@@ -17,17 +17,11 @@ typedef struct _cothread_t		cothread_t;			///< @brief	The cothread type.
 
 /**
  * @brief		The cothread endpoint type.
- * @see			@ref COTHREAD_EP_INITIALIZER
  */
 struct _cothread_ep_t
 {
 	jmp_buf		buf;	///< @brief	The execution context.
 };
-
-/**
- * @brief		The value to initialize an [endpoint](@ref _cothread_ep_t) with.
- */
-#define COTHREAD_EP_INITIALIZER	{ }
 
 /**
  * @brief		The cothread attribute type.
