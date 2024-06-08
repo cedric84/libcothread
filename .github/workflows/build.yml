@@ -40,3 +40,27 @@ jobs:
         run: ./out/x86_64-macos-unittest
       - name: run tuto0
         run: ./out/x86_64-macos-tuto0
+
+  windows-build-x64:
+    runs-on: windows-latest
+
+    steps:
+      #---Checkout current repository---#
+      - name: checkout
+        uses: actions/checkout@v4
+
+      #---Configure Visual Studio environment---#
+      - name: configure
+        uses: TheMrMilchmann/setup-msvc-dev@v3
+        with:
+          arch: x64
+
+      #---Build---#
+      - name: build
+        run: cmd /C x86_64-windows-build.bat
+
+      #---Run---#
+      - name: run unittest
+        run: out\x86_64-windows-unittest
+      - name: run tuto0
+        run: out\x86_64-windows-tuto0
