@@ -1,0 +1,24 @@
+name: build
+on:
+  push:
+    branches:
+      - ci
+
+jobs:
+  ubuntu-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      #---Checkout current repository---#
+      - name: checkout
+        uses: actions/checkout@v4
+
+      #---Build---#
+      - name: build
+        run: ./x86_64-gnu_linux-build.sh
+
+      #---Run---#
+      - name: run unittest
+        run: ./out/x86_64-gnu_linux-unittest
+      - name: run tuto0
+        run: ./out/x86_64-gnu_linux-tuto0
