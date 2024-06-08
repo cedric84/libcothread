@@ -42,7 +42,11 @@ cothread_yield(cothread_t* cothread, int user_val)
 	assert(NULL	!= cothread);
 
 	//---Save the current endpoint---//
+#if ((COTHREAD_CC_ID_MINGW == COTHREAD_CC_ID) && (COTHREAD_OS_ID_WINDOWS == COTHREAD_OS_ID))
+	const int	ret	= _setjmp(cothread->current->buf, 0);
+#else
 	const int	ret	= setjmp(cothread->current->buf);
+#endif
 
 	//---Is it the first return from setjmp ?---//
 	if (0 == ret) {
