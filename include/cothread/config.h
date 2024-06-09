@@ -39,6 +39,8 @@
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86
 #elif	((COTHREAD_CC_ID_MINGW == COTHREAD_CC_ID) && defined(__x86_64__))
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
+#elif	((COTHREAD_CC_ID_CL == COTHREAD_CC_ID) && defined(_M_IX86))
+	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86
 #elif	((COTHREAD_CC_ID_CL == COTHREAD_CC_ID) && defined(_M_AMD64))
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
 #else
@@ -110,6 +112,15 @@
 	#define COTHREAD_CALL			__attribute__ ((ms_abi))
 	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
 	typedef	__uint128_t				cothread_stack_t;
+#elif	(!0	\
+		&& (COTHREAD_CC_ID_CL			== COTHREAD_CC_ID)		\
+		&& (COTHREAD_ARCH_ID_X86		== COTHREAD_ARCH_ID)	\
+		&& (COTHREAD_OS_ID_WINDOWS		== COTHREAD_OS_ID)		\
+		)
+	#define	COTHREAD_LINK_HIDDEN
+	#define COTHREAD_CALL			__cdecl
+	#define COTHREAD_STACK_ALIGN	sizeof(unsigned int)
+	typedef	unsigned int			cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_CL			== COTHREAD_CC_ID)		\
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\

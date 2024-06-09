@@ -97,6 +97,30 @@ jobs:
       - name: run tuto0
         run: out\x86_64-mingw-tuto0
 
+  x86-windows:
+    runs-on: windows-latest
+
+    steps:
+      #---Checkout current repository---#
+      - name: checkout
+        uses: actions/checkout@v4
+
+      #---Configure Visual Studio environment---#
+      - name: configure
+        uses: TheMrMilchmann/setup-msvc-dev@v3
+        with:
+          arch: x86
+
+      #---Build---#
+      - name: build
+        run: cmd /C x86-windows-build.bat
+
+      #---Run---#
+      - name: run unittest
+        run: out\x86-windows-unittest
+      - name: run tuto0
+        run: out\x86-windows-tuto0
+
   x86_64-windows:
     runs-on: windows-latest
 
