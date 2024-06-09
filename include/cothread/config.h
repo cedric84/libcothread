@@ -31,7 +31,9 @@
 	#error	"compiler is not detected."
 #endif
 
-#if		((COTHREAD_CC_ID_GCC == COTHREAD_CC_ID) && defined(__x86_64__))
+#if		((COTHREAD_CC_ID_GCC == COTHREAD_CC_ID) && defined(__i386__))
+	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86
+#elif	((COTHREAD_CC_ID_GCC == COTHREAD_CC_ID) && defined(__x86_64__))
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
 #elif	((COTHREAD_CC_ID_CLANG == COTHREAD_CC_ID) && defined(__x86_64__))
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
@@ -68,6 +70,15 @@
 
 
 #if		(!0	\
+		&& (COTHREAD_CC_ID_GCC			== COTHREAD_CC_ID)		\
+		&& (COTHREAD_ARCH_ID_X86		== COTHREAD_ARCH_ID)	\
+		&& (COTHREAD_OS_ID_GNU_LINUX	== COTHREAD_OS_ID)		\
+		)
+	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
+	#define COTHREAD_CALL			__attribute__ ((cdecl))
+	#define COTHREAD_STACK_ALIGN	16
+	typedef	struct _cothread_stack_t { char buf; } __attribute__ ((aligned (COTHREAD_STACK_ALIGN)))		cothread_stack_t;
+#elif	(!0	\
 		&& (COTHREAD_CC_ID_GCC			== COTHREAD_CC_ID)		\
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
 		&& (COTHREAD_OS_ID_GNU_LINUX	== COTHREAD_OS_ID)		\
