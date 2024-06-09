@@ -61,6 +61,26 @@ main(int argc, char* argv[])
 	//---Log---//
 	printf("%s started\n", __func__);
 
+	//---Log configuration---//
+	static const char*	cc_name		= COTHREAD_CC_ID_GCC			== COTHREAD_CC_ID ? "gcc"
+									: COTHREAD_CC_ID_CLANG			== COTHREAD_CC_ID ? "clang"
+									: COTHREAD_CC_ID_MINGW			== COTHREAD_CC_ID ? "mingw"
+									: COTHREAD_CC_ID_CL				== COTHREAD_CC_ID ? "cl"
+									: "???";
+
+	static const char*	arch_name	= COTHREAD_ARCH_ID_X86			== COTHREAD_ARCH_ID ? "x86"
+									: COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID ? "x86_64"
+									: "???";
+
+	static const char*	os_name		= COTHREAD_OS_ID_GNU_LINUX		== COTHREAD_OS_ID ? "gnu_linux"
+									: COTHREAD_OS_ID_FREEBSD		== COTHREAD_OS_ID ? "freebsd"
+									: COTHREAD_OS_ID_MACOS			== COTHREAD_OS_ID ? "macos"
+									: COTHREAD_OS_ID_WINDOWS		== COTHREAD_OS_ID ? "windows"
+									: "???";
+	printf("%*s: %s\n", 16, "compiler", cc_name);
+	printf("%*s: %s\n", 16, "architecture", arch_name);
+	printf("%*s: %s\n", 16, "operating system", os_name);
+
 	//---Check structure member offsets---//
 	if (COTHREAD_ARCH_ID_X86 == COTHREAD_ARCH_ID) {
 		assert(0	== (uintptr_t)&(((cothread_ep_t*)0)->buf));
