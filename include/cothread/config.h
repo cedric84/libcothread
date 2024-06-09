@@ -11,7 +11,8 @@
 #define COTHREAD_CC_ID_MINGW		3	///< @brief	The MinGW compiler identifier.
 #define COTHREAD_CC_ID_CL			4	///< @brief	The Microsoft Visual Studio compiler identifier.
 
-#define COTHREAD_ARCH_ID_X86_64		1	///< @brief	The x86_64 architecture identifier.
+#define COTHREAD_ARCH_ID_X86		1	///< @brief	The x86 architecture identifier.
+#define COTHREAD_ARCH_ID_X86_64		2	///< @brief	The x86_64 architecture identifier.
 
 #define COTHREAD_OS_ID_GNU_LINUX	1	///< @brief	The GNU/Linux operating system identifier.
 #define COTHREAD_OS_ID_FREEBSD		2	///< @brief	The FreeBSD operating system identifier.
@@ -34,6 +35,8 @@
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
 #elif	((COTHREAD_CC_ID_CLANG == COTHREAD_CC_ID) && defined(__x86_64__))
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
+#elif	((COTHREAD_CC_ID_MINGW == COTHREAD_CC_ID) && defined(__i386__))
+	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86
 #elif	((COTHREAD_CC_ID_MINGW == COTHREAD_CC_ID) && defined(__x86_64__))
 	#define	COTHREAD_ARCH_ID	COTHREAD_ARCH_ID_X86_64
 #elif	((COTHREAD_CC_ID_CL == COTHREAD_CC_ID) && defined(_M_AMD64))
@@ -69,6 +72,7 @@
 		)
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((sysv_abi))
+	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
 	typedef	__uint128_t				cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_CLANG		== COTHREAD_CC_ID)		\
@@ -77,6 +81,7 @@
 		)
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((sysv_abi))
+	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
 	typedef	__uint128_t				cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_CLANG		== COTHREAD_CC_ID)		\
@@ -85,7 +90,17 @@
 		)
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((sysv_abi))
+	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
 	typedef	__uint128_t				cothread_stack_t;
+#elif	(!0	\
+		&& (COTHREAD_CC_ID_MINGW		== COTHREAD_CC_ID)		\
+		&& (COTHREAD_ARCH_ID_X86		== COTHREAD_ARCH_ID)	\
+		&& (COTHREAD_OS_ID_WINDOWS		== COTHREAD_OS_ID)		\
+		)
+	#define	COTHREAD_LINK_HIDDEN
+	#define COTHREAD_CALL			__attribute__ ((cdecl))
+	#define COTHREAD_STACK_ALIGN	sizeof(unsigned int)
+	typedef	unsigned int			cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_MINGW		== COTHREAD_CC_ID)		\
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
@@ -93,6 +108,7 @@
 		)
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL			__attribute__ ((ms_abi))
+	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
 	typedef	__uint128_t				cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_CL			== COTHREAD_CC_ID)		\
@@ -101,7 +117,8 @@
 		)
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL
-	typedef	__declspec(align(16)) struct _cothread_stack_t { char buf; }	cothread_stack_t;
+	#define COTHREAD_STACK_ALIGN	16
+	typedef	__declspec(align(COTHREAD_STACK_ALIGN)) struct _cothread_stack_t { char buf; }	cothread_stack_t;
 #else
 	#error	"configuration is not supported."
 #endif

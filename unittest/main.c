@@ -61,6 +61,35 @@ main(int argc, char* argv[])
 	//---Log---//
 	printf("%s started\n", __func__);
 
+	//---Check structure member offsets---//
+	if (COTHREAD_ARCH_ID_X86 == COTHREAD_ARCH_ID) {
+		assert(0	== (uintptr_t)&(((cothread_ep_t*)0)->buf));
+
+		assert(0	== (uintptr_t)&(((cothread_attr_t*)0)->stack));
+		assert(4	== (uintptr_t)&(((cothread_attr_t*)0)->stack_sz));
+		assert(8	== (uintptr_t)&(((cothread_attr_t*)0)->caller));
+		assert(12	== (uintptr_t)&(((cothread_attr_t*)0)->callee));
+		assert(16	== (uintptr_t)&(((cothread_attr_t*)0)->user_cb));
+
+		assert(0	== (uintptr_t)&(((cothread_t*)0)->current));
+		assert(4	== (uintptr_t)&(((cothread_t*)0)->caller));
+		assert(8	== (uintptr_t)&(((cothread_t*)0)->callee));
+	} else if (COTHREAD_ARCH_ID_X86_64 == COTHREAD_ARCH_ID) {
+		assert(0	== (uintptr_t)&(((cothread_ep_t*)0)->buf));
+
+		assert(0	== (uintptr_t)&(((cothread_attr_t*)0)->stack));
+		assert(8	== (uintptr_t)&(((cothread_attr_t*)0)->stack_sz));
+		assert(16	== (uintptr_t)&(((cothread_attr_t*)0)->caller));
+		assert(24	== (uintptr_t)&(((cothread_attr_t*)0)->callee));
+		assert(32	== (uintptr_t)&(((cothread_attr_t*)0)->user_cb));
+
+		assert(0	== (uintptr_t)&(((cothread_t*)0)->current));
+		assert(8	== (uintptr_t)&(((cothread_t*)0)->caller));
+		assert(16	== (uintptr_t)&(((cothread_t*)0)->callee));
+	} else {
+		assert(0);
+	}
+
 	//---Set the cothread attributes---//
 	static cothread_ep_t	caller_ep;
 	static cothread_ep_t	callee_ep;
@@ -74,8 +103,8 @@ main(int argc, char* argv[])
 	};
 
 	//---Check stack alignment---//
-	assert(0	== (0xFU & (uintptr_t)attr.stack));
-	assert(0	== (0xFU & attr.stack_sz));
+	assert(0	== ((COTHREAD_STACK_ALIGN - 1) & (uintptr_t)attr.stack));
+	assert(0	== ((COTHREAD_STACK_ALIGN - 1) & attr.stack_sz));
 
 	//---Initialize the cothread---//
 	size_t	ctr	= 1234;
