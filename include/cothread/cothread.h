@@ -16,6 +16,14 @@ typedef struct _cothread_attr_t	cothread_attr_t;	///< @brief	The cothread attrib
 typedef struct _cothread_t		cothread_t;			///< @brief	The cothread type.
 
 /**
+ * @brief		The callee entry point.
+ * @param		[in]	cothread	The cothread.
+ * @param		[in]	user_val	Any user value (except zero) received from the other endpoint.
+ * @return		Returns any user value (except zero) to send to the other endpoint.
+ */
+typedef int (COTHREAD_CALL * cothread_cb_t) (cothread_t* cothread, int user_val);
+
+/**
  * @brief		The cothread endpoint type.
  */
 struct _cothread_ep_t
@@ -32,7 +40,7 @@ struct _cothread_attr_t
 	size_t				stack_sz;	///< @brief	The size of the callee stack, in bytes.
 	cothread_ep_t*		caller;		///< @brief	Points the caller endpoint.
 	cothread_ep_t*		callee;		///< @brief	Points the callee endpoint.
-	int					(COTHREAD_CALL * user_cb)	(cothread_t* cothread, int user_val);	///< @brief	The callee entry point.
+	cothread_cb_t		user_cb;	///< @brief	The callee entry point.
 };
 
 /**
@@ -49,6 +57,23 @@ struct _cothread_t
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * @brief		Initializes the specified endpoint.
+ * @param		[in]	ep	The endpoint to initialize.
+ */
+extern COTHREAD_LINK void		COTHREAD_CALL cothread_ep_init	(cothread_ep_t* ep);
+
+/**
+ * @brief		Initializes the specified attributes.
+ * @param		[in]	attr		The attributes to initialize.
+ * @param		[in]	stack		The lowest address of the callee stack (must be @ref COTHREAD_STACK_ALIGN aligned.)
+ * @param		[in]	stack_sz	The size of the callee stack, in bytes (must be a multiple of @ref COTHREAD_STACK_ALIGN.)
+ * @param		[in]	caller		Points the caller endpoint.
+ * @param		[in]	callee		Points the callee endpoint.
+ * @param		[in]	user_cb		The callee entry point.
+ */
+extern COTHREAD_LINK void		COTHREAD_CALL cothread_attr_init	(cothread_attr_t* attr, cothread_stack_t* stack, size_t stack_sz, cothread_ep_t* caller, cothread_ep_t* callee, cothread_cb_t user_cb);
 
 /**
  * @brief		Initializes the specified cothread.

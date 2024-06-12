@@ -110,17 +110,16 @@ main(int argc, char* argv[])
 		assert(0);
 	}
 
-	//---Set the cothread attributes---//
+	//---Initialize the endpoints---//
 	static cothread_ep_t	caller_ep;
 	static cothread_ep_t	callee_ep;
+	cothread_ep_init(&caller_ep);
+	cothread_ep_init(&callee_ep);
+
+	//---Set the cothread attributes---//
 	static cothread_stack_t	stack[8 * 1024 * 1024 / sizeof(cothread_stack_t)];
-	cothread_attr_t			attr	= {
-		.stack		= stack,
-		.stack_sz	= sizeof(stack),
-		.caller		= &caller_ep,
-		.callee		= &callee_ep,
-		.user_cb	= user_cb,
-	};
+	cothread_attr_t			attr;
+	cothread_attr_init(&attr, stack, sizeof(stack), &caller_ep, &callee_ep, user_cb);
 
 	//---Check stack alignment---//
 	assert(0	== ((COTHREAD_STACK_ALIGN - 1) & (uintptr_t)attr.stack));

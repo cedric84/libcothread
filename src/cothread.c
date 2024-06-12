@@ -12,6 +12,36 @@
 #endif
 
 extern COTHREAD_LINK void COTHREAD_CALL
+cothread_ep_init(cothread_ep_t* ep)
+{
+	assert(NULL	!= ep);
+	// do nothing.
+}
+
+extern COTHREAD_LINK void COTHREAD_CALL
+cothread_attr_init(cothread_attr_t* attr, cothread_stack_t* stack, size_t stack_sz, cothread_ep_t* caller, cothread_ep_t* callee, cothread_cb_t user_cb)
+{
+	//---Check arguments---//
+	assert(NULL	!= attr);
+	assert(NULL	!= stack);
+	assert(0	!= stack_sz);
+	assert(NULL	!= caller);
+	assert(NULL	!= callee);
+	assert(NULL	!= user_cb);
+
+	//---Check the stack alignment---//
+	assert(0	== ((COTHREAD_STACK_ALIGN - 1) & (uintptr_t)stack));
+	assert(0	== ((COTHREAD_STACK_ALIGN - 1) & stack_sz));
+
+	//---Initialize---//
+	attr->stack		= stack;
+	attr->stack_sz	= stack_sz;
+	attr->caller	= caller;
+	attr->callee	= callee;
+	attr->user_cb	= user_cb;
+}
+
+extern COTHREAD_LINK void COTHREAD_CALL
 cothread_set_user_data(cothread_t* cothread, void* user_data)
 {
 	assert(NULL	!= cothread);
