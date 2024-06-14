@@ -26,6 +26,10 @@ jobs:
         run: ./out/x86-gnu_linux-unittest
       - name: run tuto0
         run: ./out/x86-gnu_linux-tuto0
+      - name: run tuto1 (state machine)
+        run: ./out/x86-gnu_linux-tuto1 0
+      - name: run tuto1 (cothread)
+        run: ./out/x86-gnu_linux-tuto1 1
 
   x86_64-gnu_linux:
     runs-on: ubuntu-latest
@@ -44,6 +48,10 @@ jobs:
         run: ./out/x86_64-gnu_linux-unittest
       - name: run tuto0
         run: ./out/x86_64-gnu_linux-tuto0
+      - name: run tuto1 (state machine)
+        run: ./out/x86_64-gnu_linux-tuto1 0
+      - name: run tuto1 (cothread)
+        run: ./out/x86_64-gnu_linux-tuto1 1
 
   x86_64-macos:
     runs-on: macos-12
@@ -62,6 +70,10 @@ jobs:
         run: ./out/x86_64-macos-unittest
       - name: run tuto0
         run: ./out/x86_64-macos-tuto0
+      - name: run tuto1 (state machine)
+        run: ./out/x86_64-macos-tuto1 0
+      - name: run tuto1 (cothread)
+        run: ./out/x86_64-macos-tuto1 1
 
   x86-mingw:
     runs-on: windows-latest
@@ -90,6 +102,10 @@ jobs:
         run: out\x86-mingw-unittest
       - name: run tuto0
         run: out\x86-mingw-tuto0
+      - name: run tuto1 (state machine)
+        run: out\x86-mingw-tuto1 0
+      - name: run tuto1 (cothread)
+        run: out\x86-mingw-tuto1 1
 
   x86_64-mingw:
     runs-on: windows-latest
@@ -118,6 +134,10 @@ jobs:
         run: out\x86_64-mingw-unittest
       - name: run tuto0
         run: out\x86_64-mingw-tuto0
+      - name: run tuto1 (state machine)
+        run: out\x86_64-mingw-tuto1 0
+      - name: run tuto1 (cothread)
+        run: out\x86_64-mingw-tuto1 1
 
   x86-windows:
     runs-on: windows-latest
@@ -142,6 +162,10 @@ jobs:
         run: out\x86-windows-unittest
       - name: run tuto0
         run: out\x86-windows-tuto0
+      - name: run tuto1 (state machine)
+        run: out\x86-windows-tuto1 0
+      - name: run tuto1 (cothread)
+        run: out\x86-windows-tuto1 1
 
   x86_64-windows:
     runs-on: windows-latest
@@ -166,3 +190,7 @@ jobs:
         run: out\x86_64-windows-unittest
       - name: run tuto0
         run: out\x86_64-windows-tuto0
+      - name: run tuto1 (state machine)
+        run: out\x86_64-windows-tuto1 0
+      - name: run tuto1 (cothread)
+        run: out\x86_64-windows-tuto1 1
