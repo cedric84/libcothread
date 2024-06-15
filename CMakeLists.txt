@@ -6,7 +6,7 @@ project(cothread
 	VERSION
 		1.0.0.0
 	LANGUAGES
-		C ASM
+		C ASM ASM_MASM
 )
 
 #---Provide user options---#
