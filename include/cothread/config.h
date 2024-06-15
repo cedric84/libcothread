@@ -74,6 +74,7 @@
 		&& (COTHREAD_ARCH_ID_X86		== COTHREAD_ARCH_ID)	\
 		&& (COTHREAD_OS_ID_GNU_LINUX	== COTHREAD_OS_ID)		\
 		)
+	#define COTHREAD_LINK_EXPORT
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((cdecl))
 	#define COTHREAD_STACK_ALIGN	16
@@ -83,6 +84,7 @@
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
 		&& (COTHREAD_OS_ID_GNU_LINUX	== COTHREAD_OS_ID)		\
 		)
+	#define COTHREAD_LINK_EXPORT
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((sysv_abi))
 	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
@@ -92,6 +94,7 @@
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
 		&& (COTHREAD_OS_ID_FREEBSD		== COTHREAD_OS_ID)		\
 		)
+	#define COTHREAD_LINK_EXPORT
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((sysv_abi))
 	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
@@ -101,6 +104,7 @@
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
 		&& (COTHREAD_OS_ID_MACOS		== COTHREAD_OS_ID)		\
 		)
+	#define COTHREAD_LINK_EXPORT
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((sysv_abi))
 	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
@@ -110,6 +114,7 @@
 		&& (COTHREAD_ARCH_ID_X86		== COTHREAD_ARCH_ID)	\
 		&& (COTHREAD_OS_ID_WINDOWS		== COTHREAD_OS_ID)		\
 		)
+	#define COTHREAD_LINK_EXPORT	__attribute__ ((dllexport))
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL			__attribute__ ((cdecl))
 	#define COTHREAD_STACK_ALIGN	sizeof(unsigned int)
@@ -119,6 +124,7 @@
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
 		&& (COTHREAD_OS_ID_WINDOWS		== COTHREAD_OS_ID)		\
 		)
+	#define COTHREAD_LINK_EXPORT	__attribute__ ((dllexport))
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL			__attribute__ ((ms_abi))
 	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
@@ -128,6 +134,7 @@
 		&& (COTHREAD_ARCH_ID_X86		== COTHREAD_ARCH_ID)	\
 		&& (COTHREAD_OS_ID_WINDOWS		== COTHREAD_OS_ID)		\
 		)
+	#define COTHREAD_LINK_EXPORT	__declspec(dllexport)
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL			__cdecl
 	#define COTHREAD_STACK_ALIGN	sizeof(unsigned int)
@@ -137,6 +144,7 @@
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
 		&& (COTHREAD_OS_ID_WINDOWS		== COTHREAD_OS_ID)		\
 		)
+	#define COTHREAD_LINK_EXPORT	__declspec(dllexport)
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL
 	#define COTHREAD_STACK_ALIGN	16
@@ -146,7 +154,7 @@
 #endif
 
 #ifndef COTHREAD_LINK
-	#define	COTHREAD_LINK	COTHREAD_LINK_HIDDEN
+	#define	COTHREAD_LINK
 #endif
 
 #endif /* __COTHREAD_CONFIG_H__ */
