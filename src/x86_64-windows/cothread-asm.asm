@@ -3,17 +3,17 @@ PUBLIC cothread_init
 EXTERN __intrinsic_setjmp : proto
 EXTERN longjmp : proto
 
-COTHREAD_ATTR_STACK		EQU		+0
-COTHREAD_ATTR_STACK_SZ	EQU		+8
-COTHREAD_ATTR_CALLER	EQU		+16
-COTHREAD_ATTR_CALLEE	EQU		+24
-COTHREAD_ATTR_USER_CB	EQU		+32
+COTHREAD_ATTR_STACK			EQU		+0
+COTHREAD_ATTR_STACK_SZ		EQU		+8
+COTHREAD_ATTR_CALLER_OFF	EQU		+16
+COTHREAD_ATTR_CALLEE_OFF	EQU		+24
+COTHREAD_ATTR_USER_CB		EQU		+32
 
 COTHREAD_CURRENT		EQU		+0
-COTHREAD_CALLER			EQU		+8
-COTHREAD_CALLEE			EQU		+16
 
 LOCAL_USER_CB			EQU		-8
+LOCAL_CALLER			EQU		-16
+LOCAL_CALLEE			EQU		-24
 
 ; https://stackoverflow.com/questions/33751509/external-assembly-file-in-visual-studio
 ; https://developer.ibm.com/articles/l-gas-nasm/
@@ -51,15 +51,28 @@ cothread_init:
 
 	;---Definitions---
 	push	COTHREAD_ATTR_USER_CB[rdx]			; LOCAL_USER_CB[rbp]
+	;
+	mov		rax, rcx
+	add		rax, COTHREAD_ATTR_CALLER_OFF[rdx]
+	push	rax									; LOCAL_CALLER[rbp]
+	;
+	mov		rax, rcx
+	add		rax, COTHREAD_ATTR_CALLEE_OFF[rdx]
+	push	rax									; LOCAL_CALLEE[rbp]
+	;
 	push	0
 	; from this point, stack is aligned on a 16-byte boundary
+
+	;---Zero---
+	mov		rax, LOCAL_CALLER[rbp]
+	mov		COTHREAD_CURRENT[rcx], rax
 
 	;---Initialize the callee endpoint---
 cothread_init_init_callee:
 	push	rcx								; save rcx.
 	push	rdx								; save rdx.
 	; from this point, stack is aligned on a 16-byte boundary
-	mov		rcx, COTHREAD_ATTR_CALLEE[rdx]	; rcx is used as setjmp arg0.
+	mov		rcx, LOCAL_CALLEE[rbp]			; rcx is used as setjmp arg0.
 	mov		rdx, 0							; rdx is used as setjmp arg1 (yes, MSVCRT has two arguments, see the setjmp macro. Placing zero prevent the CRT to unwind the stack.)
 	push	r9								; push r9 home.
 	push	r8								; push r8 home.
@@ -91,7 +104,7 @@ cothread_init_run_user_cb:
 
 	;---Jump to the caller---
 cothread_init_longjmp_to_caller:
-	mov		rdx, COTHREAD_CALLER[rcx]		; load rdx with the caller endpoint and ...
+	mov		rdx, LOCAL_CALLER[rbp]			; load rdx with the caller endpoint and ...
 	mov		COTHREAD_CURRENT[rcx], rdx		; ... set this endpoint as the current one.
 	mov		rdx, rax						; rdx is used as longjmp arg1.
 	mov		rcx, COTHREAD_CURRENT[rcx]		; rcx is used as longjmp arg0.
@@ -107,11 +120,6 @@ cothread_init_back_to_caller:
 	mov		rbp, r12
 
 	;---Return---
-	mov		rax, COTHREAD_ATTR_CALLER[rdx]
-	mov		COTHREAD_CURRENT[rcx], rax
-	mov		COTHREAD_CALLER[rcx], rax
-	mov		rax, COTHREAD_ATTR_CALLEE[rdx]
-	mov		COTHREAD_CALLEE[rcx], rax
 	pop		r13
 	pop		r12
 	ret

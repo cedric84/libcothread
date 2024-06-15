@@ -40,19 +40,13 @@ main(int argc, char* argv[])
 	//---Log---//
 	printf("%s started\n", __func__);
 
-	//---Initialize the endpoints---//
-	static cothread_ep_t	caller_ep;
-	static cothread_ep_t	callee_ep;
-	cothread_ep_init(&caller_ep);
-	cothread_ep_init(&callee_ep);
-
 	//---Initialize the attributes---//
 	static cothread_stack_t	stack[8 * 1024 * 1024 / sizeof(cothread_stack_t)];
 	cothread_attr_t			attr;
-	cothread_attr_init(&attr, stack, sizeof(stack), &caller_ep, &callee_ep, user_cb);
+	cothread_attr_init(&attr, stack, sizeof(stack), user_cb);
 
 	//---Initialize the cothread---//
-	cothread_t	cothread;
+	static cothread_t	cothread;
 	cothread_init(&cothread, &attr);
 
 	//---Yield from caller to callee---//

@@ -1,14 +1,14 @@
 .equ	COTHREAD_ATTR_STACK,		+0
 .equ	COTHREAD_ATTR_STACK_SZ,		+4
-.equ	COTHREAD_ATTR_CALLER,		+8
-.equ	COTHREAD_ATTR_CALLEE,		+12
+.equ	COTHREAD_ATTR_CALLER_OFF,	+8
+.equ	COTHREAD_ATTR_CALLEE_OFF,	+12
 .equ	COTHREAD_ATTR_USER_CB,		+16
 
 .equ	COTHREAD_CURRENT,	+0
-.equ	COTHREAD_CALLER,	+4
-.equ	COTHREAD_CALLEE,	+8
 
 .equ	LOCAL_USER_CB,		-4
+.equ	LOCAL_CALLER,		-8
+.equ	LOCAL_CALLEE,		-12
 
 .text
 
@@ -46,12 +46,24 @@ _cothread_init:
 
 	//---Definitions---//
 	push	COTHREAD_ATTR_USER_CB(%edx)			# LOCAL_USER_CB(%ebp)
+	//
+	mov		%ecx, %eax
+	add		COTHREAD_ATTR_CALLER_OFF(%edx), %eax
+	push	%eax								# LOCAL_CALLER(%ebp)
+	//
+	mov		%ecx, %eax
+	add		COTHREAD_ATTR_CALLEE_OFF(%edx), %eax
+	push	%eax								# LOCAL_CALLEE(%ebp)
+
+	//---Zero---//
+	mov		LOCAL_CALLER(%ebp), %eax
+	mov		%eax, COTHREAD_CURRENT(%ecx)
 
 	//---Initialize the callee endpoint---//
 cothread_init_init_callee:
 	push	%ecx							# save %ecx.
 	push	%edx							# save %edx.
-	push	COTHREAD_ATTR_CALLEE(%edx)		# push setjmp arg0.
+	push	LOCAL_CALLEE(%ebp)				# push setjmp arg0.
 	call	__setjmp						# call setjmp.
 	add		$(1*4), %esp					# remove arguments from the stack.
 	pop		%edx							# restore %edx.
@@ -71,7 +83,7 @@ cothread_init_run_user_cb:
 
 	//---Jump to the caller---//
 cothread_init_longjmp_to_caller:
-	mov		COTHREAD_CALLER(%ecx), %edx		# load %edx with the caller endpoint and ...
+	mov		LOCAL_CALLER(%ebp), %edx		# load %edx with the caller endpoint and ...
 	mov		%edx, COTHREAD_CURRENT(%ecx)	# ... set this endpoint as the current one.
 	push	%eax							# push longjmp arg1.
 	push	COTHREAD_CURRENT(%ecx)			# push longjmp arg0.
@@ -83,11 +95,6 @@ cothread_init_back_to_caller:
 	mov		%edi, %ebp
 
 	//---Return---//
-	mov		COTHREAD_ATTR_CALLER(%edx), %eax
-	mov		%eax, COTHREAD_CURRENT(%ecx)
-	mov		%eax, COTHREAD_CALLER(%ecx)
-	mov		COTHREAD_ATTR_CALLEE(%edx), %eax
-	mov		%eax, COTHREAD_CALLEE(%ecx)
 	pop		%esi
 	pop		%edi
 	ret

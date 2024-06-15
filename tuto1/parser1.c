@@ -109,9 +109,7 @@ parser1_init(parser1_t* parser, stream_t* stream)
 	parser->wptr_sz	= 0;
 	//
 	cothread_attr_t	attr;
-	cothread_ep_init(&(parser->caller));
-	cothread_ep_init(&(parser->callee));
-	cothread_attr_init(&attr, parser->stack, sizeof(parser->stack), &(parser->caller), &(parser->callee), parser1_main);
+	cothread_attr_init(&attr, parser->stack, sizeof(parser->stack), parser1_main);
 	cothread_init(&(parser->cothread), &attr);
 	cothread_set_user_data(&(parser->cothread), parser);
 }

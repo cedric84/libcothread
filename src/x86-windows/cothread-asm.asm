@@ -5,17 +5,17 @@ PUBLIC cothread_init
 EXTERN setjmp : proto
 EXTERN longjmp : proto
 
-COTHREAD_ATTR_STACK		EQU		+0
-COTHREAD_ATTR_STACK_SZ	EQU		+4
-COTHREAD_ATTR_CALLER	EQU		+8
-COTHREAD_ATTR_CALLEE	EQU		+12
-COTHREAD_ATTR_USER_CB	EQU		+16
+COTHREAD_ATTR_STACK			EQU		+0
+COTHREAD_ATTR_STACK_SZ		EQU		+4
+COTHREAD_ATTR_CALLER_OFF	EQU		+8
+COTHREAD_ATTR_CALLEE_OFF	EQU		+12
+COTHREAD_ATTR_USER_CB		EQU		+16
 
 COTHREAD_CURRENT		EQU		+0
-COTHREAD_CALLER			EQU		+4
-COTHREAD_CALLEE			EQU		+8
 
 LOCAL_USER_CB			EQU		-4
+LOCAL_CALLER			EQU		-8
+LOCAL_CALLEE			EQU		-12
 
 ; calling conventions:
 ; https://learn.microsoft.com/en-us/cpp/cpp/argument-passing-and-naming-conventions?view=msvc-170
@@ -50,13 +50,25 @@ cothread_init:
 	mov		esp, ebp							; empty the stack.
 
 	;---Definitions---
-	push	COTHREAD_ATTR_USER_CB[edx]			; LOCAL_USER_CB(ebp)
+	push	COTHREAD_ATTR_USER_CB[edx]			; LOCAL_USER_CB[ebp]
+	;
+	mov		eax, ecx
+	add		eax, COTHREAD_ATTR_CALLER_OFF[edx]
+	push	eax									; LOCAL_CALLER[ebp]
+	;
+	mov		eax, ecx
+	add		eax, COTHREAD_ATTR_CALLEE_OFF[edx]
+	push	eax									; LOCAL_CALLEE[ebp]
+
+	;---Zero---
+	mov		eax, LOCAL_CALLER[ebp]
+	mov		COTHREAD_CURRENT[ecx], eax
 
 	;---Initialize the callee endpoint---
 cothread_init_init_callee:
 	push	ecx								; save ecx.
 	push	edx								; save edx.
-	push	COTHREAD_ATTR_CALLEE[edx]		; push setjmp arg0.
+	push	LOCAL_CALLEE[ebp]				; push setjmp arg0.
 	call	setjmp							; call setjmp.
 	add		esp, (1*4)						; remove arguments from the stack.
 	pop		edx								; restore edx.
@@ -76,7 +88,7 @@ cothread_init_run_user_cb:
 
 	;---Jump to the caller---
 cothread_init_longjmp_to_caller:
-	mov		edx, COTHREAD_CALLER[ecx]	; load edx with the caller endpoint and ...
+	mov		edx, LOCAL_CALLER[ebp]		; load edx with the caller endpoint and ...
 	mov		COTHREAD_CURRENT[ecx], edx	; ... set this endpoint as the current one.
 	push	eax							; push longjmp arg1.
 	push	COTHREAD_CURRENT[ecx]		; push longjmp arg0.
@@ -88,11 +100,6 @@ cothread_init_back_to_caller:
 	mov		ebp, edi
 
 	;---Return---
-	mov		eax, COTHREAD_ATTR_CALLER[edx]
-	mov		COTHREAD_CURRENT[ecx], eax
-	mov		COTHREAD_CALLER[ecx], eax
-	mov		eax, COTHREAD_ATTR_CALLEE[edx]
-	mov		COTHREAD_CALLEE[ecx], eax
 	pop		esi
 	pop		edi
 	ret

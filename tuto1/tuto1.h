@@ -40,8 +40,6 @@ struct _parser1_t
 	uint8_t*			wptr;		///< @brief	The buffer to fill with the data read, NULL if there is no reading request pending.
 	size_t				wptr_sz;	///< @brief	The number of bytes to read.
 
-	cothread_ep_t		caller;		///< @brief	The caller endpoint.
-	cothread_ep_t		callee;		///< @brief	The callee endpoint.
 	cothread_stack_t	stack[1 * 1024 * 1024 / sizeof(cothread_stack_t)];	///< @brief	The callee stack.
 	cothread_t			cothread;	///< @brief	The cothread.
 };

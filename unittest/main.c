@@ -23,9 +23,9 @@ static int COTHREAD_CALL
 user_cb(cothread_t* cothread, int user_val)
 {
 	//---Check arguments---//
-	assert(NULL				!= cothread);
-	assert(&cothread_g		== cothread);
-	assert(cothread->callee	== cothread->current);
+	assert(NULL					!= cothread);
+	assert(&cothread_g			== cothread);
+	assert(&(cothread->callee)	== cothread->current);
 
 	//---Check user data---//
 	{
@@ -34,10 +34,10 @@ user_cb(cothread_t* cothread, int user_val)
 	}
 
 	//---Switch from callee to caller---//
-	assert(100				== user_val);
-	assert(102				== cothread_yield(cothread, 101));
-	assert(&cothread_g		== cothread);
-	assert(cothread->callee	== cothread->current);
+	assert(100					== user_val);
+	assert(102					== cothread_yield(cothread, 101));
+	assert(&cothread_g			== cothread);
+	assert(&(cothread->callee)	== cothread->current);
 
 	//---Check user data---//
 	{
@@ -87,39 +87,29 @@ main(int argc, char* argv[])
 
 		assert(0	== (uintptr_t)&(((cothread_attr_t*)0)->stack));
 		assert(4	== (uintptr_t)&(((cothread_attr_t*)0)->stack_sz));
-		assert(8	== (uintptr_t)&(((cothread_attr_t*)0)->caller));
-		assert(12	== (uintptr_t)&(((cothread_attr_t*)0)->callee));
+		assert(8	== (uintptr_t)&(((cothread_attr_t*)0)->caller_off));
+		assert(12	== (uintptr_t)&(((cothread_attr_t*)0)->callee_off));
 		assert(16	== (uintptr_t)&(((cothread_attr_t*)0)->user_cb));
 
 		assert(0	== (uintptr_t)&(((cothread_t*)0)->current));
-		assert(4	== (uintptr_t)&(((cothread_t*)0)->caller));
-		assert(8	== (uintptr_t)&(((cothread_t*)0)->callee));
 	} else if (COTHREAD_ARCH_ID_X86_64 == COTHREAD_ARCH_ID) {
 		assert(0	== (uintptr_t)&(((cothread_ep_t*)0)->buf));
 
 		assert(0	== (uintptr_t)&(((cothread_attr_t*)0)->stack));
 		assert(8	== (uintptr_t)&(((cothread_attr_t*)0)->stack_sz));
-		assert(16	== (uintptr_t)&(((cothread_attr_t*)0)->caller));
-		assert(24	== (uintptr_t)&(((cothread_attr_t*)0)->callee));
+		assert(16	== (uintptr_t)&(((cothread_attr_t*)0)->caller_off));
+		assert(24	== (uintptr_t)&(((cothread_attr_t*)0)->callee_off));
 		assert(32	== (uintptr_t)&(((cothread_attr_t*)0)->user_cb));
 
 		assert(0	== (uintptr_t)&(((cothread_t*)0)->current));
-		assert(8	== (uintptr_t)&(((cothread_t*)0)->caller));
-		assert(16	== (uintptr_t)&(((cothread_t*)0)->callee));
 	} else {
 		assert(0);
 	}
 
-	//---Initialize the endpoints---//
-	static cothread_ep_t	caller_ep;
-	static cothread_ep_t	callee_ep;
-	cothread_ep_init(&caller_ep);
-	cothread_ep_init(&callee_ep);
-
 	//---Set the cothread attributes---//
 	static cothread_stack_t	stack[8 * 1024 * 1024 / sizeof(cothread_stack_t)];
 	cothread_attr_t			attr;
-	cothread_attr_init(&attr, stack, sizeof(stack), &caller_ep, &callee_ep, user_cb);
+	cothread_attr_init(&attr, stack, sizeof(stack), user_cb);
 
 	//---Check stack alignment---//
 	assert(0	== ((COTHREAD_STACK_ALIGN - 1) & (uintptr_t)attr.stack));
@@ -129,21 +119,19 @@ main(int argc, char* argv[])
 	size_t	ctr	= 1234;
 	cothread_init(&cothread_g, &attr);
 	cothread_set_user_data(&cothread_g, &ctr);
-	assert(&caller_ep	== cothread_g.current);
-	assert(&caller_ep	== cothread_g.caller);
-	assert(&callee_ep	== cothread_g.callee);
-	assert(&ctr			== cothread_g.user_data);
+	assert(&(cothread_g.caller)	== cothread_g.current);
+	assert(&ctr					== cothread_g.user_data);
 
 	//---Clear the attributes which are now useless---//
 	memset(&attr, 0, sizeof(attr));
 
 	//---Switch from caller to callee---//
-	assert(101			== cothread_yield(&cothread_g, 100));
-	assert(&caller_ep	== cothread_g.current);
+	assert(101					== cothread_yield(&cothread_g, 100));
+	assert(&(cothread_g.caller)	== cothread_g.current);
 
 	//---Switch from caller to callee---//
-	assert(103			== cothread_yield(&cothread_g, 102));
-	assert(&caller_ep	== cothread_g.current);
+	assert(103					== cothread_yield(&cothread_g, 102));
+	assert(&(cothread_g.caller)	== cothread_g.current);
 
 	//---Check the counter---//
 	assert(1236	== ctr);
