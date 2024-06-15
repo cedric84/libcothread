@@ -7,6 +7,8 @@ target_sources(${COTHREAD_TARGET_NAME}
 #---Add the subdirectories---#
 if((CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64") AND (CMAKE_SYSTEM_NAME STREQUAL "Linux"))
 	add_subdirectory(x86_64-gnu_linux)
+elseif((CMAKE_SYSTEM_PROCESSOR STREQUAL "amd64") AND (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD"))
+	add_subdirectory(x86_64-freebsd)
 else()
 	message(FATAL_ERROR "configuration is not supported.")
 endif()
