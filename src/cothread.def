@@ -1,0 +1,6 @@
+EXPORTS
+	cothread_attr_init
+	cothread_init
+	cothread_set_user_data
+	cothread_get_user_data
+	cothread_yield
