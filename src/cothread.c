@@ -13,8 +13,15 @@
 #include <assert.h>
 #include <stdint.h>
 
-#if ((COTHREAD_CC_ID_CL == COTHREAD_CC_ID) && (COTHREAD_OS_ID_WINDOWS == COTHREAD_OS_ID))
-	extern int	__intrinsic_setjmp	(jmp_buf, void*);
+#if ((COTHREAD_ARCH_ID_X86_64 == COTHREAD_ARCH_ID) && (COTHREAD_OS_ID_WINDOWS == COTHREAD_OS_ID))
+	#if		(COTHREAD_CC_ID_MINGW == COTHREAD_CC_ID)
+		#define COTHREAD_SETJMP(_buf)	_setjmp((_buf), 0)
+	#elif	(COTHREAD_CC_ID_CL == COTHREAD_CC_ID)
+		extern int	__intrinsic_setjmp	(jmp_buf, void*);
+		#define COTHREAD_SETJMP(_buf)	__intrinsic_setjmp((_buf), 0)
+	#endif
+#else
+	#define COTHREAD_SETJMP(_buf)	setjmp((_buf))
 #endif
 
 extern COTHREAD_LINK void COTHREAD_CALL
@@ -31,11 +38,9 @@ cothread_attr_init(cothread_attr_t* attr, cothread_stack_t* stack, size_t stack_
 	assert(0	== ((COTHREAD_STACK_ALIGN - 1) & stack_sz));
 
 	//---Initialize---//
-	attr->stack			= stack;
-	attr->stack_sz		= stack_sz;
-	attr->caller_off	= (size_t)&(((cothread_t*)0)->caller);
-	attr->callee_off	= (size_t)&(((cothread_t*)0)->callee);
-	attr->user_cb		= user_cb;
+	attr->stack		= stack;
+	attr->stack_sz	= stack_sz;
+	attr->user_cb	= user_cb;
 }
 
 extern COTHREAD_LINK void COTHREAD_CALL
@@ -59,15 +64,7 @@ cothread_yield(cothread_t* cothread, int user_val)
 	assert(NULL	!= cothread);
 
 	//---Save the current endpoint---//
-#if ((COTHREAD_ARCH_ID_X86_64 == COTHREAD_ARCH_ID) && (COTHREAD_OS_ID_WINDOWS == COTHREAD_OS_ID))
-	#if		(COTHREAD_CC_ID_MINGW == COTHREAD_CC_ID)
-		const int	ret	= _setjmp(cothread->current->buf, 0);
-	#elif	(COTHREAD_CC_ID_CL == COTHREAD_CC_ID)
-		const int	ret = __intrinsic_setjmp(cothread->current->buf, 0);
-	#endif
-#else
-	const int	ret	= setjmp(cothread->current->buf);
-#endif
+	const int	ret	= COTHREAD_SETJMP(cothread->current->buf);
 
 	//---Is it the first return from setjmp ?---//
 	if (0 == ret) {
@@ -78,4 +75,38 @@ cothread_yield(cothread_t* cothread, int user_val)
 
 	//---Return---//
 	return ret;
+}
+
+/**
+ * @brief		Initializes and runs the specified cothread.
+ * @param		[in]	cothread	The cothread to initialize.
+ * @param		[in]	attr		The attributes to initialize the cothread with.
+ */
+extern COTHREAD_LINK_HIDDEN void COTHREAD_CALL
+cothread_core(cothread_t* cothread, const cothread_attr_t* attr)
+{
+	//---Check arguments---//
+	assert(NULL	!= cothread);
+	assert(NULL	!= attr);
+
+	//---Init---//
+	cothread->current	= &(cothread->callee);
+
+	//---Initialize the callee endpoint---//
+	cothread_cb_t	user_cb	= attr->user_cb;
+	int	user_val	= COTHREAD_SETJMP(cothread->current->buf);
+	if (0 != user_val) {
+		//---Forget the attributes which are not valid during the 2nd return---//
+		attr	= NULL;
+
+		//---Run the user callback---//
+		user_val	= user_cb(cothread, user_val);
+
+		//---Jump to the caller---//
+		cothread->current	= &(cothread->caller);
+		longjmp(cothread->current->buf, user_val);
+	}
+
+	//---Return to caller---//
+	cothread->current	= &(cothread->caller);
 }

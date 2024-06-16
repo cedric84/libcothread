@@ -81,27 +81,13 @@ main(int argc, char* argv[])
 	printf("%*s: %s\n", 16, "architecture", arch_name);
 	printf("%*s: %s\n", 16, "operating system", os_name);
 
-	//---Check structure member offsets---//
+	//---Check structure member offsets used in assembly code---//
 	if (COTHREAD_ARCH_ID_X86 == COTHREAD_ARCH_ID) {
-		assert(0	== (uintptr_t)&(((cothread_ep_t*)0)->buf));
-
 		assert(0	== (uintptr_t)&(((cothread_attr_t*)0)->stack));
 		assert(4	== (uintptr_t)&(((cothread_attr_t*)0)->stack_sz));
-		assert(8	== (uintptr_t)&(((cothread_attr_t*)0)->caller_off));
-		assert(12	== (uintptr_t)&(((cothread_attr_t*)0)->callee_off));
-		assert(16	== (uintptr_t)&(((cothread_attr_t*)0)->user_cb));
-
-		assert(0	== (uintptr_t)&(((cothread_t*)0)->current));
 	} else if (COTHREAD_ARCH_ID_X86_64 == COTHREAD_ARCH_ID) {
-		assert(0	== (uintptr_t)&(((cothread_ep_t*)0)->buf));
-
 		assert(0	== (uintptr_t)&(((cothread_attr_t*)0)->stack));
 		assert(8	== (uintptr_t)&(((cothread_attr_t*)0)->stack_sz));
-		assert(16	== (uintptr_t)&(((cothread_attr_t*)0)->caller_off));
-		assert(24	== (uintptr_t)&(((cothread_attr_t*)0)->callee_off));
-		assert(32	== (uintptr_t)&(((cothread_attr_t*)0)->user_cb));
-
-		assert(0	== (uintptr_t)&(((cothread_t*)0)->current));
 	} else {
 		assert(0);
 	}

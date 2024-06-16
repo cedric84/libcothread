@@ -1,14 +1,5 @@
 .equ	COTHREAD_ATTR_STACK,		+0
 .equ	COTHREAD_ATTR_STACK_SZ,		+4
-.equ	COTHREAD_ATTR_CALLER_OFF,	+8
-.equ	COTHREAD_ATTR_CALLEE_OFF,	+12
-.equ	COTHREAD_ATTR_USER_CB,		+16
-
-.equ	COTHREAD_CURRENT,	+0
-
-.equ	LOCAL_USER_CB,		-4
-.equ	LOCAL_CALLER,		-8
-.equ	LOCAL_CALLEE,		-12
 
 .text
 
@@ -44,53 +35,13 @@ _cothread_init:
 	mov		%eax, %ebp							# load the stack base pointer with the past-the-end stack address.
 	mov		%ebp, %esp							# empty the stack.
 
-	//---Definitions---//
-	push	COTHREAD_ATTR_USER_CB(%edx)			# LOCAL_USER_CB(%ebp)
-	//
-	mov		%ecx, %eax
-	add		COTHREAD_ATTR_CALLER_OFF(%edx), %eax
-	push	%eax								# LOCAL_CALLER(%ebp)
-	//
-	mov		%ecx, %eax
-	add		COTHREAD_ATTR_CALLEE_OFF(%edx), %eax
-	push	%eax								# LOCAL_CALLEE(%ebp)
-
-	//---Zero---//
-	mov		LOCAL_CALLER(%ebp), %eax
-	mov		%eax, COTHREAD_CURRENT(%ecx)
-
-	//---Initialize the callee endpoint---//
-cothread_init_init_callee:
-	push	%ecx							# save %ecx.
-	push	%edx							# save %edx.
-	push	LOCAL_CALLEE(%ebp)				# push setjmp arg0.
-	call	__setjmp						# call setjmp.
-	add		$(1*4), %esp					# remove arguments from the stack.
-	pop		%edx							# restore %edx.
-	pop		%ecx							# restore %ecx.
-	cmp		$0, %eax						# if setjmp returns 0 ...
-	je		cothread_init_back_to_caller	# ... jump.
-	// from this point, COTHREAD_ATTR_... are no more valid.
-
-	//---Run the user callback---//
-cothread_init_run_user_cb:
-	push	%ecx					# save %ecx.
-	push	%eax					# push user callback arg1.
-	push	%ecx					# push user callback arg0.
-	call	*LOCAL_USER_CB(%ebp)	# call the user callback.
-	add		$(2*4), %esp			# remove arguments from the stack.
-	pop		%ecx					# restore %ecx.
-
-	//---Jump to the caller---//
-cothread_init_longjmp_to_caller:
-	mov		LOCAL_CALLER(%ebp), %edx		# load %edx with the caller endpoint and ...
-	mov		%edx, COTHREAD_CURRENT(%ecx)	# ... set this endpoint as the current one.
-	push	%eax							# push longjmp arg1.
-	push	COTHREAD_CURRENT(%ecx)			# push longjmp arg0.
-	call	_longjmp						# call longjmp and never come back.
+	//---Initialize the cothread---//
+	push	%edx			# push cothread_core arg1.
+	push	%ecx			# push cothread_core arg0.
+	call	_cothread_core	# call cothread_core.
+	add		$(2*4), %esp	# remove arguments from the stack.
 
 	//---Restore the caller stack---//
-cothread_init_back_to_caller:
 	mov		%esi, %esp
 	mov		%edi, %ebp
 

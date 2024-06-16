@@ -1,14 +1,5 @@
 .equ	COTHREAD_ATTR_STACK,		+0
 .equ	COTHREAD_ATTR_STACK_SZ,		+8
-.equ	COTHREAD_ATTR_CALLER_OFF,	+16
-.equ	COTHREAD_ATTR_CALLEE_OFF,	+24
-.equ	COTHREAD_ATTR_USER_CB,		+32
-
-.equ	COTHREAD_CURRENT,	+0
-
-.equ	LOCAL_USER_CB,		-8
-.equ	LOCAL_CALLER,		-16
-.equ	LOCAL_CALLEE,		-24
 
 .text
 
@@ -43,73 +34,17 @@ cothread_init:
 	mov		%rbp, %rsp							# empty the stack.
 	// from this point, stack is aligned on a 16-byte boundary (if the provided stack is well defined.)
 
-	//---Definitions---//
-	push	COTHREAD_ATTR_USER_CB(%rdx)			# LOCAL_USER_CB(%rbp)
-	//
-	mov		%rcx, %rax
-	add		COTHREAD_ATTR_CALLER_OFF(%rdx), %rax
-	push	%rax								# LOCAL_CALLER(%rbp)
-	//
-	mov		%rcx, %rax
-	add		COTHREAD_ATTR_CALLEE_OFF(%rdx), %rax
-	push	%rax								# LOCAL_CALLEE(%rbp)
-	//
-	pushq	$0
-	// from this point, stack is aligned on a 16-byte boundary
-
-	//---Zero---//
-	mov		LOCAL_CALLER(%rbp), %rax
-	mov		%rax, COTHREAD_CURRENT(%rcx)
-
-	//---Initialize the callee endpoint---//
-cothread_init_init_callee:
-	push	%rcx							# save %rcx.
-	push	%rdx							# save %rdx.
-	// from this point, stack is aligned on a 16-byte boundary
-	mov		LOCAL_CALLEE(%rbp), %rcx	# %rcx is used as setjmp arg0.
-	mov		$0, %rdx						# %rdx is used as setjmp arg1 (yes, MSVCRT has two arguments, see the setjmp macro. Placing zero prevent the CRT to unwind the stack.)
-	push	%r9								# push %r9 home.
-	push	%r8								# push %r8 home.
-	push	%rdx							# push %rdx home.
-	push	%rcx							# push %rcx home.
-	call	setjmp							# call setjmp.
-	add		$(4*8), %rsp					# remove home registers from the stack.
-	pop		%rdx							# restore %rdx.
-	pop		%rcx							# restore %rcx.
-	cmp		$0, %rax						# if setjmp returns 0 ...
-	je		cothread_init_back_to_caller	# ... jump.
-	// from this point, COTHREAD_ATTR_... are no more valid.
-
-	//---Run the user callback---//
-cothread_init_run_user_cb:
-	push	%rcx					# save %rcx.
-	pushq	$0
-	// from this point, stack is aligned on a 16-byte boundary
-	mov		%rax, %rdx				# %rdx is used as user callback arg1.
-//	mov		%rcx, %rcx				# %rcx is used as user callback arg0 (already set.)
-	push	%r9						# push %r9 home.
-	push	%r8						# push %r8 home.
-	push	%rdx					# push %rdx home.
-	push	%rcx					# push %rcx home.
-	call	*LOCAL_USER_CB(%rbp)	# call the user callback.
-	add		$(4*8), %rsp			# remove home registers from the stack.
-	add		$8, %rsp
-	pop		%rcx					# restore %rcx.
-
-	//---Jump to the caller---//
-cothread_init_longjmp_to_caller:
-	mov		LOCAL_CALLER(%rbp), %rdx		# load %rdx with the caller endpoint and ...
-	mov		%rdx, COTHREAD_CURRENT(%rcx)	# ... set this endpoint as the current one.
-	mov		%rax, %rdx						# %rdx is used as longjmp arg1.
-	mov		COTHREAD_CURRENT(%rcx), %rcx	# %rcx is used as longjmp arg0.
-	push	%r9								# push %r9 home.
-	push	%r8								# push %r8 home.
-	push	%rdx							# push %rdx home.
-	push	%rcx							# push %rcx home.
-	call	longjmp							# call longjmp and never come back.
+	//---Initialize the cothread---//
+//	mov		%rdx, %rdx		# %rdx is used as cothread_core arg1 (already set.)
+//	mov		%rcx, %rcx		# %rcx is used as cothread_core arg0 (already set.)
+	push	%r9				# push %r9 home.
+	push	%r8				# push %r8 home.
+	push	%rdx			# push %rdx home.
+	push	%rcx			# push %rcx home.
+	call	cothread_core	# call cothread_core.
+	add		$(4*8), %rsp	# remove home registers from the stack.
 
 	//---Restore the caller stack---//
-cothread_init_back_to_caller:
 	mov		%r13, %rsp
 	mov		%r12, %rbp
 

@@ -38,8 +38,6 @@ struct _cothread_attr_t
 {
 	cothread_stack_t*	stack;		///< @brief	The lowest address of the callee stack.
 	size_t				stack_sz;	///< @brief	The size of the callee stack, in bytes.
-	size_t				caller_off;	///< @brief	The offset of the @ref _cothread_t::caller member.
-	size_t				callee_off;	///< @brief	The offset of the @ref _cothread_t::callee member.
 	cothread_cb_t		user_cb;	///< @brief	The callee entry point.
 };
 
@@ -68,14 +66,6 @@ extern "C" {
 extern COTHREAD_LINK void		COTHREAD_CALL cothread_attr_init	(cothread_attr_t* attr, cothread_stack_t* stack, size_t stack_sz, cothread_cb_t user_cb);
 
 /**
- * @brief		Initializes the specified cothread.
- * @param		[in]	cothread	The cothread to initialize.
- * @param		[in]	attr		The attributes to initialize the cothread with.
- * @note		Modifying @e attr after calling this function has no effect on the initialized @e cothread.
- */
-extern COTHREAD_LINK void		COTHREAD_CALL cothread_init	(cothread_t* cothread, const cothread_attr_t* attr);
-
-/**
  * @brief		Stores the specified user data in the specified cothread.
  * @param		[in]	cothread	The cothread to store the user data in.
  * @param		[in]	user_data	Any user data to store in the cothread.
@@ -96,6 +86,14 @@ extern COTHREAD_LINK void*		COTHREAD_CALL cothread_get_user_data	(const cothread
  * @return		Returns the @e user_val received from the other endpoint.
  */
 extern COTHREAD_LINK int		COTHREAD_CALL cothread_yield	(cothread_t* cothread, int user_val);
+
+/**
+ * @brief		Initializes the specified cothread.
+ * @param		[in]	cothread	The cothread to initialize.
+ * @param		[in]	attr		The attributes to initialize the cothread with.
+ * @note		Modifying @e attr after calling this function has no effect on the initialized @e cothread.
+ */
+extern COTHREAD_LINK void		COTHREAD_CALL cothread_init	(cothread_t* cothread, const cothread_attr_t* attr);
 
 #ifdef __cplusplus
 } /* extern "C" { */
