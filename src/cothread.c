@@ -3,6 +3,12 @@
  * @file
  */
 
+#ifdef _FORTIFY_SOURCE
+	// prevent GCC to raise a "longjmp causes uninitialized stackframe" error.
+	// see https://www.gnu.org/software/libc/manual/html_node/Source-Fortification.html
+	#undef _FORTIFY_SOURCE
+#endif
+
 #include <cothread/cothread.h>
 #include <assert.h>
 #include <stdint.h>

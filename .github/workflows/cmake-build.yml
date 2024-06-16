@@ -1,0 +1,174 @@
+name: build
+on:
+  push:
+    branches:
+      - ci
+
+env:
+  CMAKE_SOURCE_DIR: .
+  CMAKE_BUILD_TYPE: Release
+
+jobs:
+  x86_64-gnu_linux:
+    runs-on: ubuntu-latest
+    env:
+      CMAKE_BINARY_DIR: $CMAKE_SOURCE_DIR/build/${{ github.job }}
+      CMAKE_INSTALL_PREFIX: ./out/${{ github.job }}
+
+    steps:
+      #---Checkout current repository---#
+      - name: checkout
+        uses: actions/checkout@v4
+
+      #---Configure the project & generate a native build system---#
+      - name: configure the project & generate a native build system
+        run: >
+          cmake
+          -D CMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX
+          -D CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
+          -S $CMAKE_SOURCE_DIR
+          -B $CMAKE_BINARY_DIR
+
+      #---Build the "install" target using the native build system---#
+      - name: build the "install" target using the native build system
+        run:
+          cmake --build $CMAKE_BINARY_DIR --target install
+
+      #---Unittests---#
+      - name: unittests
+        run: >
+          mkdir -p $CMAKE_INSTALL_PREFIX/bin &&
+          cc -Wall -Werror -o $CMAKE_INSTALL_PREFIX/bin/unittest
+          -I $CMAKE_INSTALL_PREFIX/include/cothread-1.0
+          -L $CMAKE_INSTALL_PREFIX/lib
+          -Wl,-rpath=$CMAKE_INSTALL_PREFIX/lib
+          ./unittest/main.c
+          -lcothread &&
+          $CMAKE_INSTALL_PREFIX/bin/unittest
+
+  x86_64-macos:
+    runs-on: macos-12
+    env:
+      CMAKE_BINARY_DIR: $CMAKE_SOURCE_DIR/build/${{ github.job }}
+      CMAKE_INSTALL_PREFIX: ./out/${{ github.job }}
+
+    steps:
+      #---Checkout current repository---#
+      - name: checkout
+        uses: actions/checkout@v4
+
+      #---Configure the project & generate a native build system---#
+      - name: configure the project & generate a native build system
+        run: >
+          cmake
+          -D CMAKE_INSTALL_PREFIX=$CMAKE_INSTALL_PREFIX
+          -D CMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE
+          -S $CMAKE_SOURCE_DIR
+          -B $CMAKE_BINARY_DIR
+
+      #---Build the "install" target using the native build system---#
+      - name: build the "install" target using the native build system
+        run:
+          cmake --build $CMAKE_BINARY_DIR --target install
+
+      #---Unittests---#
+      - name: unittests
+        run: >
+          mkdir -p $CMAKE_INSTALL_PREFIX/bin &&
+          cc -Wall -Werror -o $CMAKE_INSTALL_PREFIX/bin/unittest
+          -I $CMAKE_INSTALL_PREFIX/include/cothread-1.0
+          -L $CMAKE_INSTALL_PREFIX/lib
+          -Wl,-rpath,$CMAKE_INSTALL_PREFIX/lib
+          ./unittest/main.c
+          -lcothread &&
+          $CMAKE_INSTALL_PREFIX/bin/unittest
+
+  x86-windows:
+    runs-on: windows-latest
+    env:
+      CMAKE_BINARY_DIR: $CMAKE_SOURCE_DIR\build\${{ github.job }}
+      CMAKE_INSTALL_PREFIX: .\out\${{ github.job }}
+
+    steps:
+      #---Checkout current repository---#
+      - name: checkout
+        uses: actions/checkout@v4
+
+      #---Configure Visual Studio environment---#
+      - name: configure
+        uses: TheMrMilchmann/setup-msvc-dev@v3
+        with:
+          arch: x86
+
+      #---Configure the project & generate a native build system---#
+      - name: configure the project & generate a native build system
+        run: >
+          cmake
+          -G"NMake Makefiles"
+          -D CMAKE_INSTALL_PREFIX=${env:CMAKE_INSTALL_PREFIX}
+          -D CMAKE_BUILD_TYPE=${env:CMAKE_BUILD_TYPE}
+          -S ${env:CMAKE_SOURCE_DIR}
+          -B ${env:CMAKE_BINARY_DIR}
+
+      #---Build the "install" target using the native build system---#
+      - name: build the "install" target using the native build system
+        run:
+          cmake --build ${env:CMAKE_BINARY_DIR} --target install
+
+      #---Unittests---#
+      - name: unittests
+        run: >
+          cl /nologo /W3 /WX /permissive- /c
+          /Fo:.\unittest\main.obj
+          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
+          .\unittest\main.c &&
+          link /NOLOGO /MACHINE:${env:VSCMD_ARG_TGT_ARCH} /SUBSYSTEM:CONSOLE
+          /OUT:${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
+          /LIBPATH:${env:CMAKE_INSTALL_PREFIX}\lib
+          .\unittest\main.obj cothread.lib &&
+          & ${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
+
+  x86_64-windows:
+    runs-on: windows-latest
+    env:
+      CMAKE_BINARY_DIR: $CMAKE_SOURCE_DIR\build\${{ github.job }}
+      CMAKE_INSTALL_PREFIX: .\out\${{ github.job }}
+
+    steps:
+      #---Checkout current repository---#
+      - name: checkout
+        uses: actions/checkout@v4
+
+      #---Configure Visual Studio environment---#
+      - name: configure
+        uses: TheMrMilchmann/setup-msvc-dev@v3
+        with:
+          arch: x64
+
+      #---Configure the project & generate a native build system---#
+      - name: configure the project & generate a native build system
+        run: >
+          cmake
+          -G"NMake Makefiles"
+          -D CMAKE_INSTALL_PREFIX=${env:CMAKE_INSTALL_PREFIX}
+          -D CMAKE_BUILD_TYPE=${env:CMAKE_BUILD_TYPE}
+          -S ${env:CMAKE_SOURCE_DIR}
+          -B ${env:CMAKE_BINARY_DIR}
+
+      #---Build the "install" target using the native build system---#
+      - name: build the "install" target using the native build system
+        run:
+          cmake --build ${env:CMAKE_BINARY_DIR} --target install
+
+      #---Unittests---#
+      - name: unittests
+        run: >
+          cl /nologo /W3 /WX /permissive- /c
+          /Fo:.\unittest\main.obj
+          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
+          .\unittest\main.c &&
+          link /NOLOGO /MACHINE:${env:VSCMD_ARG_TGT_ARCH} /SUBSYSTEM:CONSOLE
+          /OUT:${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
+          /LIBPATH:${env:CMAKE_INSTALL_PREFIX}\lib
+          .\unittest\main.obj cothread.lib &&
+          & ${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
