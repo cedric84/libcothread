@@ -87,8 +87,8 @@
 	#define COTHREAD_LINK_EXPORT
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((sysv_abi))
-	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
-	typedef	__uint128_t				cothread_stack_t;
+	#define COTHREAD_STACK_ALIGN	16
+	typedef	struct _cothread_stack_t { char buf; } __attribute__ ((aligned (COTHREAD_STACK_ALIGN)))		cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_CLANG		== COTHREAD_CC_ID)		\
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
@@ -97,8 +97,8 @@
 	#define COTHREAD_LINK_EXPORT
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((sysv_abi))
-	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
-	typedef	__uint128_t				cothread_stack_t;
+	#define COTHREAD_STACK_ALIGN	16
+	typedef	struct _cothread_stack_t { char buf; } __attribute__ ((aligned (COTHREAD_STACK_ALIGN)))		cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_CLANG		== COTHREAD_CC_ID)		\
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
@@ -107,8 +107,8 @@
 	#define COTHREAD_LINK_EXPORT
 	#define	COTHREAD_LINK_HIDDEN	__attribute__ ((visibility ("hidden")))
 	#define COTHREAD_CALL			__attribute__ ((sysv_abi))
-	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
-	typedef	__uint128_t				cothread_stack_t;
+	#define COTHREAD_STACK_ALIGN	16
+	typedef	struct _cothread_stack_t { char buf; } __attribute__ ((aligned (COTHREAD_STACK_ALIGN)))		cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_MINGW		== COTHREAD_CC_ID)		\
 		&& (COTHREAD_ARCH_ID_X86		== COTHREAD_ARCH_ID)	\
@@ -117,8 +117,8 @@
 	#define COTHREAD_LINK_EXPORT	__attribute__ ((dllexport))
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL			__attribute__ ((cdecl))
-	#define COTHREAD_STACK_ALIGN	sizeof(unsigned int)
-	typedef	unsigned int			cothread_stack_t;
+	#define COTHREAD_STACK_ALIGN	4
+	typedef	struct _cothread_stack_t { char buf; } __attribute__ ((aligned (COTHREAD_STACK_ALIGN)))		cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_MINGW		== COTHREAD_CC_ID)		\
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\
@@ -127,8 +127,8 @@
 	#define COTHREAD_LINK_EXPORT	__attribute__ ((dllexport))
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL			__attribute__ ((ms_abi))
-	#define COTHREAD_STACK_ALIGN	sizeof(__uint128_t)
-	typedef	__uint128_t				cothread_stack_t;
+	#define COTHREAD_STACK_ALIGN	16
+	typedef	struct _cothread_stack_t { char buf; } __attribute__ ((aligned (COTHREAD_STACK_ALIGN)))		cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_CL			== COTHREAD_CC_ID)		\
 		&& (COTHREAD_ARCH_ID_X86		== COTHREAD_ARCH_ID)	\
@@ -137,8 +137,8 @@
 	#define COTHREAD_LINK_EXPORT	__declspec(dllexport)
 	#define	COTHREAD_LINK_HIDDEN
 	#define COTHREAD_CALL			__cdecl
-	#define COTHREAD_STACK_ALIGN	sizeof(unsigned int)
-	typedef	unsigned int			cothread_stack_t;
+	#define COTHREAD_STACK_ALIGN	4
+	typedef	__declspec(align(COTHREAD_STACK_ALIGN)) struct _cothread_stack_t { char buf; }	cothread_stack_t;
 #elif	(!0	\
 		&& (COTHREAD_CC_ID_CL			== COTHREAD_CC_ID)		\
 		&& (COTHREAD_ARCH_ID_X86_64		== COTHREAD_ARCH_ID)	\

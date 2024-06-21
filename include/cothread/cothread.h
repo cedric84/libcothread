@@ -16,6 +16,13 @@ typedef struct _cothread_attr_t	cothread_attr_t;	///< @brief	The cothread attrib
 typedef struct _cothread_t		cothread_t;			///< @brief	The cothread type.
 
 /**
+ * @brief		Rounds the specified stack size upward to make it a multiple of @ref COTHREAD_STACK_ALIGN.
+ * @param		[in]	_sz		The stack size to round.
+ * @return		Returns the rounded value.
+ */
+#define COTHREAD_ROUND_STACK_SZ(_sz)	((((_sz) + (COTHREAD_STACK_ALIGN - 1)) / COTHREAD_STACK_ALIGN) * COTHREAD_STACK_ALIGN)
+
+/**
  * @brief		The callee entry point.
  * @param		[in]	cothread	The cothread.
  * @param		[in]	user_val	Any user value (except zero) received from the other endpoint.
@@ -60,7 +67,8 @@ extern "C" {
  * @brief		Initializes the specified attributes.
  * @param		[in]	attr		The attributes to initialize.
  * @param		[in]	stack		The lowest address of the callee stack (must be @ref COTHREAD_STACK_ALIGN aligned.)
- * @param		[in]	stack_sz	The size of the callee stack, in bytes (must be a multiple of @ref COTHREAD_STACK_ALIGN.)
+ * @param		[in]	stack_sz	The size of the callee stack, in bytes
+ *									(must be a multiple of @ref COTHREAD_STACK_ALIGN, see @ref COTHREAD_ROUND_STACK_SZ.)
  * @param		[in]	user_cb		The callee entry point.
  */
 extern COTHREAD_LINK void		COTHREAD_CALL cothread_attr_init	(cothread_attr_t* attr, cothread_stack_t* stack, size_t stack_sz, cothread_cb_t user_cb);

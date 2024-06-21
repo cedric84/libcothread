@@ -92,6 +92,16 @@ main(int argc, char* argv[])
 		assert(0);
 	}
 
+	//---Check stack size rounding macro---//
+	assert((0 * COTHREAD_STACK_ALIGN)	== COTHREAD_ROUND_STACK_SZ(0 * COTHREAD_STACK_ALIGN + 0));
+	assert((1 * COTHREAD_STACK_ALIGN)	== COTHREAD_ROUND_STACK_SZ(0 * COTHREAD_STACK_ALIGN + 1));
+	assert((1 * COTHREAD_STACK_ALIGN)	== COTHREAD_ROUND_STACK_SZ(1 * COTHREAD_STACK_ALIGN - 1));
+	assert((1 * COTHREAD_STACK_ALIGN)	== COTHREAD_ROUND_STACK_SZ(1 * COTHREAD_STACK_ALIGN + 0));
+	assert((2 * COTHREAD_STACK_ALIGN)	== COTHREAD_ROUND_STACK_SZ(1 * COTHREAD_STACK_ALIGN + 1));
+	assert((2 * COTHREAD_STACK_ALIGN)	== COTHREAD_ROUND_STACK_SZ(2 * COTHREAD_STACK_ALIGN - 1));
+	assert((2 * COTHREAD_STACK_ALIGN)	== COTHREAD_ROUND_STACK_SZ(2 * COTHREAD_STACK_ALIGN + 0));
+	assert((3 * COTHREAD_STACK_ALIGN)	== COTHREAD_ROUND_STACK_SZ(2 * COTHREAD_STACK_ALIGN + 1));
+
 	//---Set the cothread attributes---//
 	static cothread_stack_t	stack[8 * 1024 * 1024 / sizeof(cothread_stack_t)];
 	cothread_attr_t			attr;
