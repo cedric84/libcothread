@@ -2,7 +2,6 @@
 target_sources(${COTHREAD_TARGET_NAME}
 	PRIVATE
 		cothread.c
-		$<$<PLATFORM_ID:Windows>:${CMAKE_CURRENT_SOURCE_DIR}/cothread.def>
 )
 
 #---Add the subdirectories---#

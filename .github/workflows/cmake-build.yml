@@ -42,7 +42,7 @@ jobs:
           -I $CMAKE_INSTALL_PREFIX/include/cothread-1.0
           -L $CMAKE_INSTALL_PREFIX/lib
           -Wl,-rpath=$CMAKE_INSTALL_PREFIX/lib
-          ./unittest/main.c
+          $CMAKE_SOURCE_DIR/unittest/main.c
           -lcothread &&
           $CMAKE_INSTALL_PREFIX/bin/unittest
 
@@ -79,7 +79,7 @@ jobs:
           -I $CMAKE_INSTALL_PREFIX/include/cothread-1.0
           -L $CMAKE_INSTALL_PREFIX/lib
           -Wl,-rpath,$CMAKE_INSTALL_PREFIX/lib
-          ./unittest/main.c
+          $CMAKE_SOURCE_DIR/unittest/main.c
           -lcothread &&
           $CMAKE_INSTALL_PREFIX/bin/unittest
 
@@ -119,13 +119,13 @@ jobs:
       - name: unittests
         run: >
           cl /nologo /W3 /WX /permissive- /c
-          /Fo:.\unittest\main.obj
+          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\main.obj
           /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          .\unittest\main.c &&
+          ${env:CMAKE_SOURCE_DIR}\unittest\main.c &&
           link /NOLOGO /MACHINE:${env:VSCMD_ARG_TGT_ARCH} /SUBSYSTEM:CONSOLE
           /OUT:${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
           /LIBPATH:${env:CMAKE_INSTALL_PREFIX}\lib
-          .\unittest\main.obj cothread.lib &&
+          ${env:CMAKE_SOURCE_DIR}\unittest\main.obj cothread.lib &&
           & ${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
 
   x86_64-windows:
@@ -164,11 +164,11 @@ jobs:
       - name: unittests
         run: >
           cl /nologo /W3 /WX /permissive- /c
-          /Fo:.\unittest\main.obj
+          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\main.obj
           /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          .\unittest\main.c &&
+          ${env:CMAKE_SOURCE_DIR}\unittest\main.c &&
           link /NOLOGO /MACHINE:${env:VSCMD_ARG_TGT_ARCH} /SUBSYSTEM:CONSOLE
           /OUT:${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
           /LIBPATH:${env:CMAKE_INSTALL_PREFIX}\lib
-          .\unittest\main.obj cothread.lib &&
+          ${env:CMAKE_SOURCE_DIR}\unittest\main.obj cothread.lib &&
           & ${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
