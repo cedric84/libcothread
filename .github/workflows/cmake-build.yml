@@ -39,10 +39,12 @@ jobs:
         run: >
           mkdir -p $CMAKE_INSTALL_PREFIX/bin &&
           cc -Wall -Werror -o $CMAKE_INSTALL_PREFIX/bin/unittest
+          -I $CMAKE_SOURCE_DIR/unittest/include
           -I $CMAKE_INSTALL_PREFIX/include/cothread-1.0
           -L $CMAKE_INSTALL_PREFIX/lib
           -Wl,-rpath=$CMAKE_INSTALL_PREFIX/lib
-          $CMAKE_SOURCE_DIR/unittest/main.c
+          $CMAKE_SOURCE_DIR/unittest/src/unittest0.c
+          $CMAKE_SOURCE_DIR/unittest/src/main.c
           -lcothread &&
           $CMAKE_INSTALL_PREFIX/bin/unittest
 
@@ -76,10 +78,12 @@ jobs:
         run: >
           mkdir -p $CMAKE_INSTALL_PREFIX/bin &&
           cc -Wall -Werror -o $CMAKE_INSTALL_PREFIX/bin/unittest
+          -I $CMAKE_SOURCE_DIR/unittest/include
           -I $CMAKE_INSTALL_PREFIX/include/cothread-1.0
           -L $CMAKE_INSTALL_PREFIX/lib
           -Wl,-rpath,$CMAKE_INSTALL_PREFIX/lib
-          $CMAKE_SOURCE_DIR/unittest/main.c
+          $CMAKE_SOURCE_DIR/unittest/src/unittest0.c
+          $CMAKE_SOURCE_DIR/unittest/src/main.c
           -lcothread &&
           $CMAKE_INSTALL_PREFIX/bin/unittest
 
@@ -119,13 +123,24 @@ jobs:
       - name: unittests
         run: >
           cl /nologo /W3 /WX /permissive- /c
-          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\main.obj
+          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\unittest0.obj
+          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
           /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          ${env:CMAKE_SOURCE_DIR}\unittest\main.c &&
+          ${env:CMAKE_SOURCE_DIR}\unittest\src\unittest0.c
+          &&
+          cl /nologo /W3 /WX /permissive- /c
+          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\main.obj
+          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
+          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
+          ${env:CMAKE_SOURCE_DIR}\unittest\src\main.c
+          &&
           link /NOLOGO /MACHINE:${env:VSCMD_ARG_TGT_ARCH} /SUBSYSTEM:CONSOLE
           /OUT:${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
           /LIBPATH:${env:CMAKE_INSTALL_PREFIX}\lib
-          ${env:CMAKE_SOURCE_DIR}\unittest\main.obj cothread.lib &&
+          ${env:CMAKE_SOURCE_DIR}\unittest\unittest0.obj
+          ${env:CMAKE_SOURCE_DIR}\unittest\main.obj
+          cothread.lib
+          &&
           & ${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
 
   x86_64-windows:
@@ -164,11 +179,22 @@ jobs:
       - name: unittests
         run: >
           cl /nologo /W3 /WX /permissive- /c
-          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\main.obj
+          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\unittest0.obj
+          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
           /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          ${env:CMAKE_SOURCE_DIR}\unittest\main.c &&
+          ${env:CMAKE_SOURCE_DIR}\unittest\src\unittest0.c
+          &&
+          cl /nologo /W3 /WX /permissive- /c
+          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\main.obj
+          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
+          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
+          ${env:CMAKE_SOURCE_DIR}\unittest\src\main.c
+          &&
           link /NOLOGO /MACHINE:${env:VSCMD_ARG_TGT_ARCH} /SUBSYSTEM:CONSOLE
           /OUT:${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
           /LIBPATH:${env:CMAKE_INSTALL_PREFIX}\lib
-          ${env:CMAKE_SOURCE_DIR}\unittest\main.obj cothread.lib &&
+          ${env:CMAKE_SOURCE_DIR}\unittest\unittest0.obj
+          ${env:CMAKE_SOURCE_DIR}\unittest\main.obj
+          cothread.lib
+          &&
           & ${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe

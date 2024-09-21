@@ -10,7 +10,10 @@ SRC="./src/cothread.c ./src/${PFX}/cothread.S"
 mkdir -p ./out
 
 #---Build---#
-cc  ${CFLAGS} ${SRC} -o ${OUT_PFX}-unittest	./unittest/main.c	&&
+cc  ${CFLAGS} ${SRC} -o ${OUT_PFX}-unittest	\
+	-I./unittest/include					\
+	./unittest/src/unittest0.c				\
+	./unittest/src/main.c	&&
 cc  ${CFLAGS} ${SRC} -o ${OUT_PFX}-tuto0	./tuto0/main.c	&&
 cc  ${CFLAGS} ${SRC} -o ${OUT_PFX}-tuto1 -I./tuto1	\
 	./tuto1/main.c		\
