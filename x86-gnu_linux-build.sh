@@ -14,6 +14,7 @@ mkdir -p ./out
 ${CC}  ${CFLAGS} ${SRC} -o ${OUT_PFX}-unittest	\
 	-I./unittest/include						\
 	./unittest/src/unittest0.c					\
+	./unittest/src/unittest1.c					\
 	./unittest/src/main.c	&&
 ${CC}  ${CFLAGS} ${SRC} -o ${OUT_PFX}-tuto0		./tuto0/main.c	&&
 ${CC}  ${CFLAGS} ${SRC} -o ${OUT_PFX}-tuto1 -I./tuto1	\

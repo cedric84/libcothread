@@ -60,6 +60,7 @@ main(int argc, char* argv[])
 
 	//---Performs the unittests---//
 	unittest0();
+	unittest1();
 
 	//---Return---//
 	printf("%s terminated\n", __func__);
