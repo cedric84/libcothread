@@ -9,6 +9,7 @@
 #include <cothread/config.h>
 #include <setjmp.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 //---Forward declarations---//
 typedef struct _cothread_ep_t	cothread_ep_t;		///< @brief	The cothread endpoint type.
@@ -35,7 +36,8 @@ typedef int (COTHREAD_CALL * cothread_cb_t) (cothread_t* cothread, int user_val)
  */
 struct _cothread_ep_t
 {
-	jmp_buf		buf;	///< @brief	The execution context.
+	jmp_buf		buf;		///< @brief	The execution context.
+	const char*	dbg_name;	///< @brief	The debug name, never NULL.
 };
 
 /**
@@ -43,9 +45,13 @@ struct _cothread_ep_t
  */
 struct _cothread_attr_t
 {
-	cothread_stack_t*	stack;		///< @brief	The lowest address of the callee stack.
-	size_t				stack_sz;	///< @brief	The size of the callee stack, in bytes.
-	cothread_cb_t		user_cb;	///< @brief	The callee entry point.
+	cothread_stack_t*	stack;				///< @brief	The lowest address of the callee stack.
+	size_t				stack_sz;			///< @brief	The size of the callee stack, in bytes.
+	cothread_cb_t		user_cb;			///< @brief	The callee entry point.
+	//
+	const char*			dbg_caller_name;	///< @brief	The caller debug name, may be NULL, no internal copy is done.
+	const char*			dbg_callee_name;	///< @brief	The callee debug name, may be NULL, no internal copy is done.
+	FILE*				dbg_strm;			///< @brief	The stream to log debug informations to, may be NULL.
 };
 
 /**
@@ -57,6 +63,7 @@ struct _cothread_t
 	cothread_ep_t		caller;		///< @brief	The caller endpoint.
 	cothread_ep_t		callee;		///< @brief	The callee endpoint.
 	void*				user_data;	///< @brief	Any user data.
+	FILE*				dbg_strm;	///< @brief	The stream to log debug informations to, may be NULL.
 };
 
 #ifdef __cplusplus
@@ -72,6 +79,27 @@ extern "C" {
  * @param		[in]	user_cb		The callee entry point.
  */
 extern COTHREAD_LINK void		COTHREAD_CALL cothread_attr_init	(cothread_attr_t* attr, cothread_stack_t* stack, size_t stack_sz, cothread_cb_t user_cb);
+
+/**
+ * @brief		Sets a debug name for the caller.
+ * @param		[in]	attr	The attributes to store the debug name in.
+ * @param		[in]	name	The caller debug name, may be NULL, no internal copy is done.
+ */
+extern COTHREAD_LINK void		COTHREAD_CALL cothread_attr_set_dbg_caller_name	(cothread_attr_t* attr, const char* name);
+
+/**
+ * @brief		Sets a debug name for the callee.
+ * @param		[in]	attr	The attributes to store the debug name in.
+ * @param		[in]	name	The callee debug name, may be NULL, no internal copy is done.
+ */
+extern COTHREAD_LINK void		COTHREAD_CALL cothread_attr_set_dbg_callee_name	(cothread_attr_t* attr, const char* name);
+
+/**
+ * @brief		Sets the stream to log debug informations to.
+ * @param		[in]	attr	The attributes to store the stream in.
+ * @param		[in]	strm	The stream to log the debug informations to, may be NULL.
+ */
+extern COTHREAD_LINK void		COTHREAD_CALL cothread_attr_set_dbg_strm	(cothread_attr_t* attr, FILE* strm);
 
 /**
  * @brief		Stores the specified user data in the specified cothread.

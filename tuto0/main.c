@@ -5,7 +5,6 @@
 
 #include <cothread/cothread.h>
 #include <assert.h>
-#include <stdio.h>
 
 /**
  * @brief		The callee entry point.
@@ -20,11 +19,11 @@ user_cb(cothread_t* cothread, int user_val)
 	assert(NULL		!= cothread);
 
 	//---Yield from callee to caller---//
-	printf("callee yields to caller...\n");
+	printf("\n->%s yields to %s...\n\n", cothread->callee.dbg_name, cothread->caller.dbg_name);
 	cothread_yield(cothread, 456);
 
 	//---Return to caller---//
-	printf("callee returns to caller...\n");
+	printf("\n->%s returns to %s...\n\n", cothread->callee.dbg_name, cothread->caller.dbg_name);
 	return 0;
 }
 
@@ -44,17 +43,18 @@ main(int argc, char* argv[])
 	static cothread_stack_t	stack[8 * 1024 * 1024 / sizeof(cothread_stack_t)];
 	cothread_attr_t			attr;
 	cothread_attr_init(&attr, stack, sizeof(stack), user_cb);
+	cothread_attr_set_dbg_strm(&attr, stdout);	// optional.
 
 	//---Initialize the cothread---//
 	static cothread_t	cothread;
 	cothread_init(&cothread, &attr);
 
 	//---Yield from caller to callee---//
-	printf("caller yields to callee...\n");
+	printf("\n->%s yields to %s...\n\n", cothread.caller.dbg_name, cothread.callee.dbg_name);
 	cothread_yield(&cothread, 123);
 
 	//---Yield from caller to callee---//
-	printf("caller yields again to callee...\n");
+	printf("\n->%s yields again to %s...\n\n", cothread.caller.dbg_name, cothread.callee.dbg_name);
 	cothread_yield(&cothread, 789);
 
 	//---Return---//

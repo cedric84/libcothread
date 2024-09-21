@@ -18,6 +18,10 @@ any data he/she wants, and the `cothread_get_user_data` one to retrieve it
 the `cothread_yield` function (note that this function may be called many times to get back
 to the previous execution context.)
 
+For debugging purposes, the user may name the execution contexts using the `cothread_attr_set_dbg_caller_name`
+and the `cothread_attr_set_dbg_callee_name` functions and instruct the library to log some informations
+to an output stream using the `cothread_attr_set_dbg_strm` one.
+
 ## Examples
 The [tuto0](tuto0) is a very simple program that demonstrates how to initialize and use the library.
 
