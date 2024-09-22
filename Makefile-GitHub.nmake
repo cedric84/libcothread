@@ -4,6 +4,7 @@ LDFLAGS=/NOLOGO /MACHINE:$(VSCMD_ARG_TGT_ARCH) /SUBSYSTEM:CONSOLE
 OBJECTS=	\
 	$(CMAKE_SOURCE_DIR)\unittest\src\unittest0.c.obj	\
 	$(CMAKE_SOURCE_DIR)\unittest\src\unittest1.c.obj	\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest2.cxx.obj	\
 	$(CMAKE_SOURCE_DIR)\unittest\src\main.c.obj
 
 .SILENT:

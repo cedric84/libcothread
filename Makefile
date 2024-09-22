@@ -4,6 +4,7 @@ OUT_PFX=$(OUT_DIR)/$(PFX)-
 OBJ_DIR=./obj
 LIB_OBJ=$(OBJ_DIR)/src/cothread.o $(OBJ_DIR)/src/$(PFX)/cothread.o
 CFLAGS=-Wall -Werror -I./include
+CXXFLAGS=$(CFLAGS) -std=c++11
 
 .SILENT:
 all:	init unittest tuto0 tuto1
@@ -22,8 +23,9 @@ unittest:								\
 	$(LIB_OBJ)							\
 	$(OBJ_DIR)/unittest/src/unittest0.o	\
 	$(OBJ_DIR)/unittest/src/unittest1.o	\
+	$(OBJ_DIR)/unittest/src/unittest2.o	\
 	$(OBJ_DIR)/unittest/src/main.o
-	$(CC) -o $(OUT_PFX)$@ $^
+	$(CXX) -o $(OUT_PFX)$@ $^
 
 tuto0:	$(LIB_OBJ) $(OBJ_DIR)/tuto0/main.o
 	$(CC) -o $(OUT_PFX)$@ $^
@@ -36,6 +38,9 @@ tuto1:							\
 	$(OBJ_DIR)/tuto1/parser1.o	\
 	$(OBJ_DIR)/tuto1/main.o
 	$(CC) -o $(OUT_PFX)$@ $^
+
+$(OBJ_DIR)/%.o: %.cxx
+	$(CXX) $(CXXFLAGS) -c -o $@ $^
 
 $(OBJ_DIR)/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^

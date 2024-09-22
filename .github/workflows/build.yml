@@ -15,7 +15,7 @@ jobs:
 
       #---Install prerequisites---#
       - name: install prerequisites
-        run: sudo apt-get install gcc-i686-linux-gnu
+        run: sudo apt-get install gcc-i686-linux-gnu g++-i686-linux-gnu
 
       #---Build---#
       - name: build

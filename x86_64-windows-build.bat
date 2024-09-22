@@ -34,6 +34,7 @@ set CFLAGS=	^
 CL %CFLAGS% /Fo:obj\unittest-main.obj /I unittest\include unittest\src\main.c
 CL %CFLAGS% /Fo:obj\unittest-unittest0.obj /I unittest\include unittest\src\unittest0.c
 CL %CFLAGS% /Fo:obj\unittest-unittest1.obj /I unittest\include unittest\src\unittest1.c
+CL %CFLAGS% /Fo:obj\unittest-unittest2.obj /I unittest\include unittest\src\unittest2.cxx
 CL %CFLAGS% /Fo:obj\tuto0-main.obj tuto0\main.c
 CL %CFLAGS% /Fo:obj\tuto1-main.obj /I tuto1 tuto1\main.c
 CL %CFLAGS% /Fo:obj\tuto1-stream.obj /I tuto1 tuto1\stream.c
@@ -52,6 +53,7 @@ LINK %LDFLAGS% /OUT:%OUT_PFX%-unittest.exe	^
 	obj\unittest-main.obj	^
 	obj\unittest-unittest0.obj	^
 	obj\unittest-unittest1.obj	^
+	obj\unittest-unittest2.obj	^
 	obj\cothread.obj	^
 	obj\cothread-asm.obj
 LINK %LDFLAGS% /OUT:%OUT_PFX%-tuto0.exe obj\tuto0-main.obj obj\cothread.obj obj\cothread-asm.obj
