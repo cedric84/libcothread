@@ -38,15 +38,7 @@ jobs:
       - name: unittests
         run: >
           mkdir -p $CMAKE_INSTALL_PREFIX/bin &&
-          cc -Wall -Werror -o $CMAKE_INSTALL_PREFIX/bin/unittest
-          -I $CMAKE_SOURCE_DIR/unittest/include
-          -I $CMAKE_INSTALL_PREFIX/include/cothread-1.0
-          -L $CMAKE_INSTALL_PREFIX/lib
-          -Wl,-rpath=$CMAKE_INSTALL_PREFIX/lib
-          $CMAKE_SOURCE_DIR/unittest/src/unittest0.c
-          $CMAKE_SOURCE_DIR/unittest/src/unittest1.c
-          $CMAKE_SOURCE_DIR/unittest/src/main.c
-          -lcothread &&
+          make -f Makefile-GitHub unittest &&
           $CMAKE_INSTALL_PREFIX/bin/unittest
 
   x86_64-macos:
@@ -78,15 +70,7 @@ jobs:
       - name: unittests
         run: >
           mkdir -p $CMAKE_INSTALL_PREFIX/bin &&
-          cc -Wall -Werror -o $CMAKE_INSTALL_PREFIX/bin/unittest
-          -I $CMAKE_SOURCE_DIR/unittest/include
-          -I $CMAKE_INSTALL_PREFIX/include/cothread-1.0
-          -L $CMAKE_INSTALL_PREFIX/lib
-          -Wl,-rpath,$CMAKE_INSTALL_PREFIX/lib
-          $CMAKE_SOURCE_DIR/unittest/src/unittest0.c
-          $CMAKE_SOURCE_DIR/unittest/src/unittest1.c
-          $CMAKE_SOURCE_DIR/unittest/src/main.c
-          -lcothread &&
+          make -f Makefile-GitHub unittest &&
           $CMAKE_INSTALL_PREFIX/bin/unittest
 
   x86-windows:
@@ -124,32 +108,7 @@ jobs:
       #---Unittests---#
       - name: unittests
         run: >
-          cl /nologo /W3 /WX /permissive- /c
-          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
-          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\unittest0.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\src\unittest0.c
-          &&
-          cl /nologo /W3 /WX /permissive- /c
-          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
-          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\unittest1.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\src\unittest1.c
-          &&
-          cl /nologo /W3 /WX /permissive- /c
-          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
-          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\main.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\src\main.c
-          &&
-          link /NOLOGO /MACHINE:${env:VSCMD_ARG_TGT_ARCH} /SUBSYSTEM:CONSOLE
-          /OUT:${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
-          /LIBPATH:${env:CMAKE_INSTALL_PREFIX}\lib
-          ${env:CMAKE_SOURCE_DIR}\unittest\unittest0.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\unittest1.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\main.obj
-          cothread.lib
-          &&
+          nmake /F Makefile-GitHub.nmake unittest.exe &&
           & ${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
 
   x86_64-windows:
@@ -187,30 +146,5 @@ jobs:
       #---Unittests---#
       - name: unittests
         run: >
-          cl /nologo /W3 /WX /permissive- /c
-          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
-          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\unittest0.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\src\unittest0.c
-          &&
-          cl /nologo /W3 /WX /permissive- /c
-          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
-          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\unittest1.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\src\unittest1.c
-          &&
-          cl /nologo /W3 /WX /permissive- /c
-          /I ${env:CMAKE_SOURCE_DIR}\unittest\include
-          /I ${env:CMAKE_INSTALL_PREFIX}\include\cothread-1.0
-          /Fo:${env:CMAKE_SOURCE_DIR}\unittest\main.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\src\main.c
-          &&
-          link /NOLOGO /MACHINE:${env:VSCMD_ARG_TGT_ARCH} /SUBSYSTEM:CONSOLE
-          /OUT:${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
-          /LIBPATH:${env:CMAKE_INSTALL_PREFIX}\lib
-          ${env:CMAKE_SOURCE_DIR}\unittest\unittest0.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\unittest1.obj
-          ${env:CMAKE_SOURCE_DIR}\unittest\main.obj
-          cothread.lib
-          &&
+          nmake /F Makefile-GitHub.nmake unittest.exe &&
           & ${env:CMAKE_INSTALL_PREFIX}\bin\unittest.exe
