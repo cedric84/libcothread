@@ -1,0 +1,62 @@
+#---Definitions---#
+OUT_DIR=out
+OUT_PFX=$(OUT_DIR)\$(PFX)-
+
+OBJ_DIR=obj
+ASMFLAGS=/c /nologo /W3 /WX
+CFLAGS=/c /I include /MD /nologo /permissive- /W3 /WX
+LDFLAGS=/MACHINE:$(VSCMD_ARG_TGT_ARCH) /NOLOGO /SUBSYSTEM:CONSOLE
+
+LIBRARY_OBJS=$(OBJ_DIR)\src\cothread.obj $(OBJ_DIR)\src\$(PFX)\cothread-asm.obj
+
+#---Suppress display of executed commands---#
+.SILENT:
+
+#---First rule---#
+.all:	init unittest.exe tuto0.exe tuto1.exe
+
+#---Initialization rule---#
+init:
+	cmake -E remove_directory $(OBJ_DIR)
+
+	cmake -E make_directory $(OUT_DIR)
+	cmake -E make_directory $(OBJ_DIR)\src\$(PFX)
+	cmake -E make_directory $(OBJ_DIR)\unittest\src
+	cmake -E make_directory $(OBJ_DIR)\tuto0
+	cmake -E make_directory $(OBJ_DIR)\tuto1
+
+#---Library rules---#
+{src\$(PFX)}.asm{$(OBJ_DIR)\src\$(PFX)}.obj:
+	$(AS) $(ASMFLAGS) /Fo $@ $**
+{src}.c{$(OBJ_DIR)\src}.obj:
+	$(CC) $(CFLAGS) /Fo:$@ $**
+
+#---Unittest rules---#
+{unittest\src}.c{$(OBJ_DIR)\unittest\src}.obj:
+	$(CC) $(CFLAGS) /I unittest\include /Fo:$@ $**
+{unittest\src}.cxx{$(OBJ_DIR)\unittest\src}.obj:
+	$(CXX) $(CFLAGS) /I unittest\include /Fo:$@ $**
+unittest.exe:								\
+	$(LIBRARY_OBJS)							\
+	$(OBJ_DIR)\unittest\src\unittest0.obj	\
+	$(OBJ_DIR)\unittest\src\unittest1.obj	\
+	$(OBJ_DIR)\unittest\src\unittest2.obj	\
+	$(OBJ_DIR)\unittest\src\main.obj
+	LINK $(LDFLAGS) /OUT:$(OUT_PFX)$@ $**
+
+#---Tuto0 rules---#
+{tuto0}.c{$(OBJ_DIR)\tuto0}.obj:
+	$(CC) $(CFLAGS) /Fo:$@ $**
+tuto0.exe: $(LIBRARY_OBJS) $(OBJ_DIR)\tuto0\main.obj
+	LINK $(LDFLAGS) /OUT:$(OUT_PFX)$@ $**
+
+#---Tuto1 rules---#
+{tuto1}.c{$(OBJ_DIR)\tuto1}.obj:
+	$(CC) $(CFLAGS) /I tuto1 /Fo:$@ $**
+tuto1.exe:							\
+	$(LIBRARY_OBJS)					\
+	$(OBJ_DIR)\tuto1\stream.obj		\
+	$(OBJ_DIR)\tuto1\parser0.obj	\
+	$(OBJ_DIR)\tuto1\parser1.obj	\
+	$(OBJ_DIR)\tuto1\main.obj
+	LINK $(LDFLAGS) /OUT:$(OUT_PFX)$@ $**
