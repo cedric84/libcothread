@@ -3,7 +3,7 @@
  * @file
  */
 
-#include <unittest/unittest.h>
+#include <unittest/unittest.hxx>
 
 /**
  * @brief		Performs the unittest.

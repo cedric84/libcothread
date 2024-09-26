@@ -17,13 +17,15 @@ all:	unittest
 
 #---Unittest rules---#
 unittest: CFLAGS+=-I$(CMAKE_SOURCE_DIR)/unittest/include
-unittest:											\
-	$(CMAKE_SOURCE_DIR)/unittest/src/unittest0.o	\
-	$(CMAKE_SOURCE_DIR)/unittest/src/unittest1.o	\
-	$(CMAKE_SOURCE_DIR)/unittest/src/unittest2.o	\
+unittest:													\
+	$(CMAKE_SOURCE_DIR)/unittest/src/unittest0.o			\
+	$(CMAKE_SOURCE_DIR)/unittest/src/unittest1.o			\
+	$(CMAKE_SOURCE_DIR)/unittest/src/unittest2.o			\
+	$(CMAKE_SOURCE_DIR)/unittest/src/unittest3.o			\
+	$(CMAKE_SOURCE_DIR)/unittest/src/unittest_cothread.o	\
 	$(CMAKE_SOURCE_DIR)/unittest/src/main.o
-	$(CXX)											\
-	-o $(CMAKE_INSTALL_PREFIX)/bin/$@				\
-	-L $(CMAKE_INSTALL_PREFIX)/lib					\
-	-Wl,-rpath,$(CMAKE_INSTALL_PREFIX)/lib			\
+	$(CXX)									\
+	-o $(CMAKE_INSTALL_PREFIX)/bin/$@		\
+	-L $(CMAKE_INSTALL_PREFIX)/lib			\
+	-Wl,-rpath,$(CMAKE_INSTALL_PREFIX)/lib	\
 	$^ -lcothread

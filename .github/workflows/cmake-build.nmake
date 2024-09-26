@@ -16,11 +16,13 @@ all:	unittest.exe
 
 #---Unittest rules---#
 unittest.exe:	\
-	$(CMAKE_SOURCE_DIR)\unittest\src\unittest0.obj	\
-	$(CMAKE_SOURCE_DIR)\unittest\src\unittest1.obj	\
-	$(CMAKE_SOURCE_DIR)\unittest\src\unittest2.obj	\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest0.obj			\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest1.obj			\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest2.obj			\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest3.obj			\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest_cothread.obj	\
 	$(CMAKE_SOURCE_DIR)\unittest\src\main.obj
-	LINK $(LDFLAGS) 								\
-	/OUT:$(CMAKE_INSTALL_PREFIX)\bin\$@				\
-	/LIBPATH:$(CMAKE_INSTALL_PREFIX)\lib			\
+	LINK $(LDFLAGS) 						\
+	/OUT:$(CMAKE_INSTALL_PREFIX)\bin\$@		\
+	/LIBPATH:$(CMAKE_INSTALL_PREFIX)\lib	\
 	$** cothread.lib

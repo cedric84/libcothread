@@ -36,11 +36,13 @@ $(OBJ_DIR)/%.o: %.S
 
 #---Unittest rules---#
 unittest: CFLAGS+=-I./unittest/include
-unittest:								\
-	$(LIBRARY_OBJS)						\
-	$(OBJ_DIR)/unittest/src/unittest0.o	\
-	$(OBJ_DIR)/unittest/src/unittest1.o	\
-	$(OBJ_DIR)/unittest/src/unittest2.o	\
+unittest:										\
+	$(LIBRARY_OBJS)								\
+	$(OBJ_DIR)/unittest/src/unittest0.o			\
+	$(OBJ_DIR)/unittest/src/unittest1.o			\
+	$(OBJ_DIR)/unittest/src/unittest2.o			\
+	$(OBJ_DIR)/unittest/src/unittest3.o			\
+	$(OBJ_DIR)/unittest/src/unittest_cothread.o	\
 	$(OBJ_DIR)/unittest/src/main.o
 	$(CXX) -o $(OUT_PFX)$@ $^
 
