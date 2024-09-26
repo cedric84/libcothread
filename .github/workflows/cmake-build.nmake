@@ -1,20 +1,26 @@
+#---Definitions---#
 CFLAGS=/nologo /W3 /WX /permissive- /I$(CMAKE_SOURCE_DIR)\unittest\include /I$(CMAKE_INSTALL_PREFIX)\include\cothread-1.0 $(CFLAGS)
 LDFLAGS=/NOLOGO /MACHINE:$(VSCMD_ARG_TGT_ARCH) /SUBSYSTEM:CONSOLE
 
-OBJECTS=	\
-	$(CMAKE_SOURCE_DIR)\unittest\src\unittest0.c.obj	\
-	$(CMAKE_SOURCE_DIR)\unittest\src\unittest1.c.obj	\
-	$(CMAKE_SOURCE_DIR)\unittest\src\unittest2.cxx.obj	\
-	$(CMAKE_SOURCE_DIR)\unittest\src\main.c.obj
-
+#---Suppress display of executed commands---#
 .SILENT:
+
+#---First rule---#
 all:	unittest.exe
 
-unittest.exe: $(OBJECTS)
-	link $(LDFLAGS) 									\
-	/OUT:$(CMAKE_INSTALL_PREFIX)\bin\$@					\
-	/LIBPATH:$(CMAKE_INSTALL_PREFIX)\lib				\
-	$** cothread.lib
+#---Global rules---#
+.c.obj:
+	$(CC) $(CFLAGS) /c /Fo:$@ $**
+.cxx.obj:
+	$(CXX) $(CFLAGS) /c /Fo:$@ $**
 
-$(OBJECTS):
-	cl $(CFLAGS) /c /Fo:$@ $*
+#---Unittest rules---#
+unittest.exe:	\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest0.obj	\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest1.obj	\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest2.obj	\
+	$(CMAKE_SOURCE_DIR)\unittest\src\main.obj
+	LINK $(LDFLAGS) 								\
+	/OUT:$(CMAKE_INSTALL_PREFIX)\bin\$@				\
+	/LIBPATH:$(CMAKE_INSTALL_PREFIX)\lib			\
+	$** cothread.lib
