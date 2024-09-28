@@ -2,7 +2,7 @@ name: cmake-build
 on:
   push:
     branches:
-      - ci
+      - try-catch
 
 env:
   CMAKE_SOURCE_DIR: .

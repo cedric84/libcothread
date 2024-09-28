@@ -16,6 +16,7 @@ extern COTHREAD_LINK_HIDDEN	void	COTHREAD_CALL unittest0		(void);
 extern COTHREAD_LINK_HIDDEN	void	COTHREAD_CALL unittest1		(void);
 extern COTHREAD_LINK_HIDDEN	void	COTHREAD_CALL unittest2		(void);
 extern COTHREAD_LINK_HIDDEN	void	COTHREAD_CALL unittest3		(void);
+extern COTHREAD_LINK_HIDDEN	void	COTHREAD_CALL unittest4		(void);
 /// @endcond
 
 #ifdef __cplusplus

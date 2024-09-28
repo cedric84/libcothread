@@ -63,6 +63,7 @@ main(int argc, char* argv[])
 	unittest1();
 	unittest2();
 	unittest3();
+	unittest4();
 
 	//---Return---//
 	printf("%s terminated\n", __func__);

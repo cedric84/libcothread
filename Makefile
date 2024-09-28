@@ -42,6 +42,7 @@ unittest:										\
 	$(OBJ_DIR)/unittest/src/unittest1.o			\
 	$(OBJ_DIR)/unittest/src/unittest2.o			\
 	$(OBJ_DIR)/unittest/src/unittest3.o			\
+	$(OBJ_DIR)/unittest/src/unittest4.o			\
 	$(OBJ_DIR)/unittest/src/unittest_cothread.o	\
 	$(OBJ_DIR)/unittest/src/main.o
 	$(CXX) -o $(OUT_PFX)$@ $^

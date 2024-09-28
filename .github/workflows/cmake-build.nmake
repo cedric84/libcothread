@@ -1,5 +1,6 @@
 #---Definitions---#
 CFLAGS=/nologo /W3 /WX /permissive- /I$(CMAKE_SOURCE_DIR)\unittest\include /I$(CMAKE_INSTALL_PREFIX)\include\cothread-1.0 $(CFLAGS)
+CXXFLAGS=$(CFLAGS) /EHsc
 LDFLAGS=/NOLOGO /MACHINE:$(VSCMD_ARG_TGT_ARCH) /SUBSYSTEM:CONSOLE
 
 #---Suppress display of executed commands---#
@@ -12,7 +13,7 @@ all:	unittest.exe
 .c.obj:
 	$(CC) $(CFLAGS) /c /Fo:$@ $**
 .cxx.obj:
-	$(CXX) $(CFLAGS) /c /Fo:$@ $**
+	$(CXX) $(CXXFLAGS) /c /Fo:$@ $**
 
 #---Unittest rules---#
 unittest.exe:	\
@@ -20,6 +21,7 @@ unittest.exe:	\
 	$(CMAKE_SOURCE_DIR)\unittest\src\unittest1.obj			\
 	$(CMAKE_SOURCE_DIR)\unittest\src\unittest2.obj			\
 	$(CMAKE_SOURCE_DIR)\unittest\src\unittest3.obj			\
+	$(CMAKE_SOURCE_DIR)\unittest\src\unittest4.obj			\
 	$(CMAKE_SOURCE_DIR)\unittest\src\unittest_cothread.obj	\
 	$(CMAKE_SOURCE_DIR)\unittest\src\main.obj
 	LINK $(LDFLAGS) 						\

@@ -22,6 +22,7 @@ unittest:													\
 	$(CMAKE_SOURCE_DIR)/unittest/src/unittest1.o			\
 	$(CMAKE_SOURCE_DIR)/unittest/src/unittest2.o			\
 	$(CMAKE_SOURCE_DIR)/unittest/src/unittest3.o			\
+	$(CMAKE_SOURCE_DIR)/unittest/src/unittest4.o			\
 	$(CMAKE_SOURCE_DIR)/unittest/src/unittest_cothread.o	\
 	$(CMAKE_SOURCE_DIR)/unittest/src/main.o
 	$(CXX)									\

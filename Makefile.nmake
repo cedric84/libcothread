@@ -5,6 +5,7 @@ OUT_PFX=$(OUT_DIR)\$(PFX)-
 OBJ_DIR=obj
 ASMFLAGS=/c /nologo /W3 /WX
 CFLAGS=/c /I include /MD /nologo /permissive- /W3 /WX
+CXXFLAGS=$(CFLAGS) /EHsc
 LDFLAGS=/MACHINE:$(VSCMD_ARG_TGT_ARCH) /NOLOGO /SUBSYSTEM:CONSOLE
 
 LIBRARY_OBJS=$(OBJ_DIR)\src\cothread.obj $(OBJ_DIR)\src\$(PFX)\cothread-asm.obj
@@ -35,13 +36,14 @@ init:
 {unittest\src}.c{$(OBJ_DIR)\unittest\src}.obj:
 	$(CC) $(CFLAGS) /I unittest\include /Fo:$@ $**
 {unittest\src}.cxx{$(OBJ_DIR)\unittest\src}.obj:
-	$(CXX) $(CFLAGS) /I unittest\include /Fo:$@ $**
+	$(CXX) $(CXXFLAGS) /I unittest\include /Fo:$@ $**
 unittest.exe:										\
 	$(LIBRARY_OBJS)									\
 	$(OBJ_DIR)\unittest\src\unittest0.obj			\
 	$(OBJ_DIR)\unittest\src\unittest1.obj			\
 	$(OBJ_DIR)\unittest\src\unittest2.obj			\
 	$(OBJ_DIR)\unittest\src\unittest3.obj			\
+	$(OBJ_DIR)\unittest\src\unittest4.obj			\
 	$(OBJ_DIR)\unittest\src\unittest_cothread.obj	\
 	$(OBJ_DIR)\unittest\src\main.obj
 	LINK $(LDFLAGS) /OUT:$(OUT_PFX)$@ $**
